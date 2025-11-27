@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /cgi-bin/
+Disallow: /admin/
+Disallow: /design/
+Disallow: /api_core/
+Disallow: /install/

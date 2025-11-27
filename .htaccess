@@ -1,0 +1,67 @@
+ 
+# Уважаемые пользователи нашей ApiCMS
+# Все коды htacces, находящиеся в коментариях (#)
+# Закоментированы для тех кто работает 
+# Через локальный сервер или на хостинге на базе Windows
+
+DirectoryIndex index.php
+
+php_flag display_startup_errors on
+php_flag display_errors on
+php_flag html_errors on
+
+# MIME тип по умолчанию
+# php_value default_mimetype text/html
+
+# Магические кавычки
+# php_flag magic_quotes_gpc Off
+# php_flag magic_quotes_runtime Off
+# php_flag magic_quotes_sybase Off
+
+# Не создаются переменные argc и argv
+# php_flag register_argc_argv Off
+
+# Глобальные переменные
+# php_flag register_globals Off
+
+# Сессия
+# php_value session.auto_start 1
+
+# Разделитель переменных в URI
+# php_value arg_separator.output "&amp;"
+
+
+
+Options -Indexes
+AddDefaultCharset UTF-8
+# php_value default_charset UTF-8
+# php_value upload_max_filesize 15M
+# php_value post_max_size 15M
+
+
+# mbstring
+# Автозамена на мультибайтную кодировку
+# php_value mbstring.func_overload 6
+
+# Компрессия
+# php_value zlib.output_compression 4096
+# php_value zlib.output_compression_level 5
+
+# <FilesMatch ".(flv|gif|jpg|jpeg|png|ico|swf|js|css|pdf)$">
+# Header set Cache-Control "max-age=86400"
+# </FilesMatch>
+
+# FileETag MTime Size
+# ExpiresActive on
+# ExpiresDefault "access plus 86400 seconds"
+
+
+
+ErrorDocument 304 /error/304.php
+ErrorDocument 400 /error/400.php
+ErrorDocument 401 /error/401.php
+ErrorDocument 403 /error/403.php
+ErrorDocument 404 /error/404.php
+ErrorDocument 406 /error/406.php
+ErrorDocument 500 /error/500.php
+ErrorDocument 502 /error/502.php

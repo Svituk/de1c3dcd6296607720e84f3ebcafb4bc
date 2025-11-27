@@ -12,33 +12,51 @@ $user_level = $is_user && isset($user['level']) ? intval($user['level']) : 0;
 
 if ($user_level>0){
 if (isset($_POST['txt'])){
-$text = apicms_filter($_POST['txt']);
-if (strlen($text)>1024)$err = '<div class="apicms_content"><center>Очень длинное сообщение</center></div>';
-if (strlen($text)<10)$err = '<div class="apicms_content"><center>Короткое сообщение</center></div>';
-$hashtxt=str_replace(" ","", $_POST['txt']);
+$raw = isset($_POST['txt']) ? $_POST['txt'] : '';
+$len = mb_strlen($raw, 'UTF-8');
+if ($len>1024)$err = '<div class="apicms_content"><center>Очень длинное сообщение</center></div>';
+if ($len<10)$err = '<div class="apicms_content"><center>Короткое сообщение</center></div>';
+$hashtxt=str_replace(" ","", $raw);
 if(empty($hashtxt))$err = '<div class="apicms_content"><center>Ошибка ввода сообщения</center></div>';  
 if (!isset($err)){
+$text = apicms_filter($raw);
+if (mb_strlen($text, 'UTF-8') > 1024) $err = '<div class="apicms_content"><center>Очень длинное сообщение</center></div>';
+}
+if (!isset($err)){
 global $connect;
-mysqli_query($connect, "INSERT INTO `guest` (`txt`, `ip`, `time`, `browser`, `oc`, `adm`) VALUES ('$text', '".apicms_filter($ip)."', '$time', '".browser()."', '".apicms_filter($oc)."', '1')");
+$ins = mysqli_query($connect, "INSERT INTO `guest` (`txt`, `ip`, `time`, `browser`, `oc`, `adm`) VALUES ('$text', '".apicms_filter($ip)."', '$time', '".browser()."', '".apicms_filter($oc)."', '1')");
+if ($ins){
 echo '<div class="erors">Сообщение успешно добавлено</div>';
-}else{
+} else {
+echo '<div class="apicms_content"><center>Ошибка записи сообщения</center></div>';
+}
+} else {
 apicms_error($err);
 }
 }
 }
 if (!$is_user){
 if (isset($_POST['txt'])){
-$text = apicms_filter($_POST['txt']);
+$raw = isset($_POST['txt']) ? $_POST['txt'] : '';
 if ($_POST['code'] != $_SESSION['captcha'])$err = '<div class="apicms_content"><center>Неверное проверочное число</center></div>';
-if (strlen($text)>1024)$err = '<div class="apicms_content"><center>Очень длинное сообщение</center></div>';
-if (strlen($text)<10)$err = '<div class="apicms_content"><center>Короткое сообщение</center></div>';
-$hashtxt=str_replace(" ","", $_POST['txt']);
+$len = mb_strlen($raw, 'UTF-8');
+if ($len>1024)$err = '<div class="apicms_content"><center>Очень длинное сообщение</center></div>';
+if ($len<10)$err = '<div class="apicms_content"><center>Короткое сообщение</center></div>';
+$hashtxt=str_replace(" ","", $raw);
 if(empty($hashtxt))$err = '<div class="apicms_content"><center>Ошибка ввода сообщения</center></div>';  
 if (!isset($err)){
+$text = apicms_filter($raw);
+if (mb_strlen($text, 'UTF-8') > 1024) $err = '<div class="apicms_content"><center>Очень длинное сообщение</center></div>';
+}
+if (!isset($err)){
 global $connect;
-mysqli_query($connect, "INSERT INTO `guest` (`txt`, `ip`, `time`, `browser`, `oc`, `adm`) VALUES ('$text', '".apicms_filter($ip)."', '$time', '".browser()."', '".apicms_filter($oc)."', '0')");
+$ins = mysqli_query($connect, "INSERT INTO `guest` (`txt`, `ip`, `time`, `browser`, `oc`, `adm`) VALUES ('$text', '".apicms_filter($ip)."', '$time', '".browser()."', '".apicms_filter($oc)."', '0')");
+if ($ins){
 echo '<div class="erors">Сообщение успешно добавлено</div>';
-}else{
+} else {
+echo '<div class="apicms_content"><center>Ошибка записи сообщения</center></div>';
+}
+} else {
 apicms_error($err);
 }
 }
@@ -77,7 +95,7 @@ if ($user_level>=1) echo ' | <a href="delete.php?id='.$post_guest['id'].'">DEL</
 echo " </span>";
 echo "</br>";
 if ($user_level>=1)echo "<small> IP: ".$post_guest['ip']." / Браузер: ".$post_guest['browser']." / ОС: ".$post_guest['oc']."</small></br>";
-echo " <b>".apicms_smiles(apicms_bb_code(apicms_br(htmlspecialchars($post_guest['txt']))))."</b></td></tr></table></div>";
+echo " ".apicms_smiles(apicms_bb_code(apicms_br(htmlspecialchars($post_guest['txt']))))."</td></tr></table></div>";
 }
 /////////////////////////////////////////
 if ($user_level>0){
@@ -92,6 +110,11 @@ echo '<img src="/captcha.php?'.rand(100, 999).'" width="50" height="27"  alt="ca
 <input name="code" type="text" maxlength="3" size="15" /><br/>';
 echo "<input type='submit' value='Добавить'/></form></center></div>";
 }
+/////////////////////////////////////////
+echo '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/default.min.css" />';
+echo '<script src="https://cdn.jsdelivr.net/npm/sceditor@3/minified/sceditor.min.js"></script>';
+echo '<script src="https://cdn.jsdelivr.net/npm/sceditor@3/minified/formats/bbcode.min.js"></script>';
+echo '<script>(function(){ var areas = document.querySelectorAll("textarea[name=\'txt\']"); if(areas && areas.length){ areas.forEach(function(textarea){ try { sceditor.create(textarea, { format: "bbcode", style: "https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/content/default.min.css" }); } catch(e){} }); } })();</script>';
 /////////////////////////////////////////
 if ($k_page > 1){
 echo '<div class="apicms_subhead"><center>';

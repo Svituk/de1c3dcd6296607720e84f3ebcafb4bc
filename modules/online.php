@@ -6,6 +6,7 @@ $title = 'Пользователи онлайн';
 require_once '../api_core/apicms_system.php';
 require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
 /////////////////////////////////////////
+$user_level = isset($user['level']) ? intval($user['level']) : 0;
 $my_acts = time()-600;
 ///////////////////////////////////
 global $connect;
@@ -24,21 +25,21 @@ if ($ank['level']==1){
 echo "<div class='apicms_subhead'><table width='100%'><tr><td width='10%'>";
 echo apicms_ava40($ank['id']);
 echo "</td><td width='90%'> ".agent($ank['id'])." <a href='/profile.php?id=".$ank['id']."'><b>".htmlspecialchars($ank['login'])."</b></a> (ADM) <span style='float:right'><small> ".apicms_data($post_on['activity'])." </small></span> </br> ".htmlspecialchars($ank['my_place'])." </br> ";
-if ($user['level']==1)echo "<small> IP: <a href='/admin/get_ip.php?ip=".$ank['ip']."'>".$ank['ip']."</a> </small></br> ";
+if ($user_level==1)echo "<small> IP: <a href='/admin/get_ip.php?ip=".$ank['ip']."'>".$ank['ip']."</a> </small></br> ";
 echo "</td></tr></table> </div>";
 }
 if ($ank['level']==2){
 echo "<div class='apicms_subhead'><table width='100%'><tr><td width='10%'>";
 echo apicms_ava40($ank['id']);
 echo "</td><td width='90%'><a href='/profile.php?id=".$ank['id']."'><b>".htmlspecialchars($ank['login'])."</b></a> (MOD) <span style='float:right'><small> ".apicms_data($post_on['activity'])." </small></span> </br> ".htmlspecialchars($ank['my_place'])." </br> ";
-if ($user['level']==1)echo "<small> IP: <a href='/admin/get_ip.php?ip=".$ank['ip']."'>".$ank['ip']."</a> </small></br> ";
+if ($user_level==1)echo "<small> IP: <a href='/admin/get_ip.php?ip=".$ank['ip']."'>".$ank['ip']."</a> </small></br> ";
 echo "</td></tr></table> </div>";
 }
 if ($ank['level']==0){
 echo "<div class='apicms_subhead'><table width='100%'><tr><td width='10%'>";
 echo apicms_ava40($ank['id']);
 echo "</td><td width='90%'><a href='/profile.php?id=".$ank['id']."'><b>".htmlspecialchars($ank['login'])."</b></a> <span style='float:right'><small> ".apicms_data($post_on['activity'])." </small></span> </br> ".htmlspecialchars($ank['my_place'])." </br> ";
-if ($user['level']==1)echo "<small> IP: <a href='/admin/get_ip.php?ip=".$ank['ip']."'>".$ank['ip']."</a> </small></br> ";
+if ($user_level==1)echo "<small> IP: <a href='/admin/get_ip.php?ip=".$ank['ip']."'>".$ank['ip']."</a> </small></br> ";
 echo "</td></tr></table> </div>";
 }
 }

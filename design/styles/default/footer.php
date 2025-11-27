@@ -6,6 +6,11 @@ if (defined('H') && file_exists(H.'api_core/ads_down.php')){
 } elseif (file_exists(__DIR__.'/../../api_core/ads_down.php')){
 	include_once __DIR__.'/../../api_core/ads_down.php';
 }
+// Flush buffered errors so they are visible even if set after head rendering
+if (isset($apicms_errors) && is_array($apicms_errors)){
+    foreach($apicms_errors as $e){ echo $e; }
+    $apicms_errors = array();
+}
 global $connect;
 $refr = apicms_generate(6);
 $reg_count_result = mysqli_query($connect, "SELECT id FROM `users`");

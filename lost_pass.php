@@ -21,9 +21,17 @@ if ($qq && isset($qq['login']) && isset($qq['email']) && $qq['login']==$_POST['l
 mysqli_query($connect, "UPDATE `users` SET `pass` = '$pass' WHERE `login` = '".mysqli_real_escape_string($connect, $qq['login'])."' LIMIT 1");
 ////////////////////////////////////////
 //Отправка на E-Mail
-$email_a = 'password@'.$set['site'];
+$email_from = !empty($api_settings['adm_mail']) ? $api_settings['adm_mail'] : ('no-reply@'.$set['site']);
 $message = 'Здравствуйте, вы запросили восстановление пароля. Ваш временный пароль '.$myret.' пожалуйста смените его при первом входе на сайт.';
-mail($qq['email'], '=?utf-8?B?'.base64_encode('Восстановление '.$set['site']).'?=', $message, "From: $email_a\r\napicms_content-type: text/plain; charset=utf-8;\r\nX-Mailer: PHP;");
+$subject = 'Восстановление '.$set['site'];
+$encoded_subject = '=?UTF-8?B?'.base64_encode($subject).'?=';
+$headers = "MIME-Version: 1.0\r\n".
+           "From: $email_from\r\n".
+           "Reply-To: $email_from\r\n".
+           "Content-Type: text/plain; charset=UTF-8\r\n".
+           "Content-Transfer-Encoding: 8bit\r\n".
+           "X-Mailer: PHP";
+@mail($qq['email'], $encoded_subject, $message, $headers, '-f'.$email_from);
 echo '<div class="apicms_subhead"><center>Пароль отправлен на e-mail пользователя '.$qq['login'].'</center></div>';
 }
 ////////////////////////////////////////

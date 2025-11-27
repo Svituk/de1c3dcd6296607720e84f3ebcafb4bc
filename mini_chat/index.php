@@ -44,14 +44,14 @@ echo '<div class="apicms_subhead"><table width="100%" ><tr><td width="20%"><cent
 echo apicms_ava32($ank2['id']);
 echo "</center></td><td width='80%'><a href='/profile.php?id=$ank2[id]'>".$ank2['login']."</a> ";
 echo "<span style='float:right'> ".apicms_data($post_chat['time'])." ";
-if ($user['level']>=1) echo '  <a href="delete.php?id='.$post_chat['id'].'"><img src="/design/styles/'.htmlspecialchars($api_design).'/images/delete_us.png" alt="DEL"></a> ';
+if (isset($user['level']) && $user['level']>=1) echo '  <a href="delete.php?id='.$post_chat['id'].'"><img src="/design/styles/'.htmlspecialchars($api_design).'/images/delete_us.png" alt="DEL"></a> ';
 echo " </span>";
 echo "</br> <b>".apicms_smiles(apicms_br(htmlspecialchars($post_chat['txt'])))."</b>";
-if ($user['id']!=$ank2['id'] && $user['id']) echo '<br /><small><a href="otvet.php?id='.$post_chat['id'].'&user='.$ank2['id'].'">Ответить</a></small>';
+if (isset($user['id']) && $user['id']!=$ank2['id']) echo '<br /><small><a href="otvet.php?id='.$post_chat['id'].'&user='.$ank2['id'].'">Ответить</a></small>';
 echo '</td></tr></table></div>';
 }
 /////////////////////////////////////////
-if ($user['id']){
+if (isset($user['id']) && $user['id']){
 echo "<form action='?ok' method='post'>";
 echo "<div class='apicms_dialog'><center><textarea name='txt'></textarea><br />";
 echo "<input type='submit' value='Добавить'/></form></center></div>";

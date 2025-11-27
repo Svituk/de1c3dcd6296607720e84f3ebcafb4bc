@@ -87,13 +87,21 @@ require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
 
 if ($_POST['rassilka']==1){
 //Отправка на E-Mail
-$email_a = 'news@'.$set['site'];
+$email_from = !empty($api_settings['adm_mail']) ? $api_settings['adm_mail'] : ('no-reply@'.$set['site']);
 $email_result = mysqli_query($connect, "SELECT * FROM `users` LIMIT 1");
 $email = mysqli_fetch_assoc($email_result);
 $message = 'Последние новости сайта:
 '.$name_news.'
  '.$txt_news.'';
-mail($email['email'], '=?utf-8?B?'.base64_encode('Новости сайта '.$set['site']).'?=', $message, "From: $email_a\r\napicms_content-type: text/plain; charset=utf-8;\r\nX-Mailer: PHP;");
+$subject = 'Новости сайта '.$set['site'];
+$encoded_subject = '=?UTF-8?B?'.base64_encode($subject).'?=';
+$headers = "MIME-Version: 1.0\r\n".
+           "From: $email_from\r\n".
+           "Reply-To: $email_from\r\n".
+           "Content-Type: text/plain; charset=UTF-8\r\n".
+           "Content-Transfer-Encoding: 8bit\r\n".
+           "X-Mailer: PHP";
+@mail($email['email'], $encoded_subject, $message, $headers, '-f'.$email_from);
 }
 session_destroy();
 break;

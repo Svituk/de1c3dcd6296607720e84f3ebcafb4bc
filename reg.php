@@ -4,16 +4,16 @@ $title = 'Регистрация пользователя';
 require_once 'api_core/apicms_system.php';
 require_once 'design/styles/'.htmlspecialchars($api_design).'/head.php';
 ////////////////////////////////////////
-if ($user['id']) header('location: index.php');
+if (isset($user['id']) && $user['id']) header('location: index.php');
 ////////////////////////////////////////
 if ($api_settings['reg']==1){
 
-$login = apicms_filter($_POST['login']);
-$pass = apicms_filter($_POST['pass']);
-$email = apicms_filter($_POST['email']);
-$code = apicms_filter($_POST['code']);
-$pol = apicms_filter($_POST['sex']);
-$kod_activate = apicms_generate(19);
+$login = isset($_POST['login']) ? apicms_filter($_POST['login']) : '';
+$pass = isset($_POST['pass']) ? apicms_filter($_POST['pass']) : '';
+$email = isset($_POST['email']) ? apicms_filter($_POST['email']) : '';
+$code = isset($_POST['code']) ? apicms_filter($_POST['code']) : '';
+$pol = isset($_POST['sex']) ? apicms_filter($_POST['sex']) : '';
+$kod_activate = '';
 
 if (isset($_POST['save'])){
 
@@ -40,31 +40,18 @@ $query = mysqli_query($connect, "SELECT COUNT(`email`) as cnt FROM `users` WHERE
 $row_email = mysqli_fetch_assoc($query);
 if ($row_email['cnt']>0)$err = '<div class="erors">Извините, данный email уже зарегистрирован в системе</div>';
 
-if (empty($_POST['code']))$err = '<div class="erors">Вы не ввели проверочный код</div>';
+if ($code === '')$err = '<div class="erors">Вы не ввели проверочный код</div>';
 
-if ($_POST['code'] != $_SESSION['captcha'])$err = '<div class="erors">Вы неверно ввели проверочный код</div>';
+if ($code !== '' && isset($_SESSION['captcha']) && $code != $_SESSION['captcha'])$err = '<div class="erors">Вы неверно ввели проверочный код</div>';
 
-if ($pol<0 || $pol>2)$err = '<div class="erors">Вы не выбрали вашу стать</div>';
+if (intval($pol)<0 || intval($pol)>2 || $pol==='')$err = '<div class="erors">Вы не выбрали вашу стать</div>';
 
 if (!isset($err)){
 ////////////////////////////////////////			
-mysqli_query($connect, "INSERT INTO `users` SET `login` = '$login', `activ_mail` = '".$kod_activate."', `pass` = '".md5(md5($pass))."', `email` = '$email', `sex` = '$pol', `regtime` = '".time()."', `last_aut` = '".time()."'");
+mysqli_query($connect, "INSERT INTO `users` SET `login` = '$login', `activ_mail` = '1', `pass` = '".md5(md5($pass))."', `email` = '$email', `sex` = '".intval($pol)."', `regtime` = '".time()."', `last_aut` = '".time()."'");
 ////////////////////////////////////////		
-//Отправка на E-Mail
-$email_a = 'admin@'.$set['site'];
-$message = 'Уважаемый пользователь! Вы успешно зарегистрировались на сайте '.$set['site'].'  
-Ваши данные для входа на сайт:
-Ваш Логин: '.$login.'
-Ваш Пароль: '.$pass.'
-Автологин для входа: http://'.$set['site'].'/login.php?log='.$login.'&pas='.$pass.'
-Подтвердите ваш email перейдя по ссылке http://'.$set['site'].'/mail_activate.php?log='.$login.'&code='.$kod_activate.'
-Пожалуйста сохраните данные в надежном месте!
-С уважением, команда '.$set['site'];
-mail($email, '=?utf-8?B?'.base64_encode('Регистрация на '.$set['site']).'?=', $message, "From: $email_a\r\napicms_content-type: text/plain; charset=utf-8;\r\nX-Mailer: PHP;");
 unset($_SESSION['captcha']);
-echo '<div class="apicms_content"><center>Регистрация прошла успешно! </br> 
-На ваш e-mail '.htmlspecialchars($email).' отправлено письмо с активацией аккаунта </br>
-Если письма нету в папке входящие, советуем проверить папку спам или подождать некоторое время</center></div>';
+echo '<div class="apicms_content"><center>Регистрация прошла успешно! Аккаунт активирован.</center></div>';
 }else{
 apicms_error($err);
 }

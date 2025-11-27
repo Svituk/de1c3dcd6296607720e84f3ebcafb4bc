@@ -8,7 +8,9 @@ session_start();
 $_SESSION[$set_dg1] = time()+394534293534488;
 $_SESSION[$set_dg2] = $set_dg1;
 
-header('Cache-control: no-cache');
+if (!headers_sent()){
+    header('Cache-control: no-cache');
+}
 // Ensure safe defaults
 $api_design = isset($api_design) && $api_design ? $api_design : (isset($api_settings['style']) && $api_settings['style'] ? $api_settings['style'] : 'default');
 
@@ -49,6 +51,7 @@ echo '<meta http-equiv="content-type" content="application/xhtml+xml; charset=ut
 echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>';
 echo '<meta http-equiv="Content-Style-Type" content="text/css" />';
 }
+if (isset($apicms_errors) && is_array($apicms_errors)) { foreach($apicms_errors as $e){ echo $e; } $apicms_errors = array(); }
 echo '<div class="logo"><center><a href="/"><img src="/design/styles/'.$api_design.'/style_images/logo.png" height="35"/></a></center></div>';
 
 if (file_exists(''.$_SERVER['DOCUMENT_ROOT'].'/install/') && $user_level==1){

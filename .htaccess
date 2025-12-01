@@ -47,13 +47,16 @@ AddDefaultCharset UTF-8
 # php_value zlib.output_compression 4096
 # php_value zlib.output_compression_level 5
 
-# <FilesMatch ".(flv|gif|jpg|jpeg|png|ico|swf|js|css|pdf)$">
-# Header set Cache-Control "max-age=86400"
-# </FilesMatch>
+<FilesMatch "\.(?:flv|gif|jpg|jpeg|png|ico|swf|js|css|pdf)$">
+Header set Cache-Control "public, max-age=2592000"
+</FilesMatch>
 
-# FileETag MTime Size
-# ExpiresActive on
-# ExpiresDefault "access plus 86400 seconds"
+FileETag MTime Size
+ExpiresActive On
+ExpiresByType image/gif "access plus 30 days"
+ExpiresByType image/jpeg "access plus 30 days"
+ExpiresByType image/png "access plus 30 days"
+ExpiresByType image/x-icon "access plus 30 days"
 
 
 

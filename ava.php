@@ -18,26 +18,33 @@ $users = mysqli_fetch_array($user_r);
 echo '<div class="apicms_subhead"><center>';
 echo apicms_ava64($user['id']);
 echo '</center></div>';
-	
-if (isset($_FILES['file'])){
-if (preg_match('#\.jpe?g$#i',$_FILES['file']['name']) && $imgc=@imagecreatefromjpeg($_FILES['file']['tmp_name'])){
-if (imagesx($imgc)>1 || imagesy($imgc)>256){
+
+$err = '';
+
+    if (isset($_FILES['file']) && isset($_FILES['file']['name']) && isset($_FILES['file']['tmp_name'])){
+    $upload_ok = true;
+    if (!isset($_FILES['file']['error']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK){ $err .= '<div class="erors"><center>Ошибка загрузки файла</center></div>'; $upload_ok = false; }
+    elseif (!is_uploaded_file($_FILES['file']['tmp_name'])){ $err .= '<div class="erors"><center>Некорректный источник файла</center></div>'; $upload_ok = false; }
+    elseif (isset($_FILES['file']['size']) && $_FILES['file']['size'] > 2*1024*1024){ $err .= '<div class="erors"><center>Слишком большой файл (макс 2 МБ)</center></div>'; $upload_ok = false; }
+    else { $info = @getimagesize($_FILES['file']['tmp_name']); $mime = $info && isset($info['mime']) ? $info['mime'] : ''; if ($mime!== 'image/jpeg' && $mime!== 'image/png' && $mime!== 'image/gif'){ $err .= '<div class="erors"><center>Неверный формат изображения</center></div>'; $upload_ok = false; } }
+    if ($upload_ok && preg_match('#\.jpe?g$#i',$_FILES['file']['name']) && $imgc=@imagecreatefromjpeg($_FILES['file']['tmp_name'])){
+if (imagesx($imgc)>500 || imagesy($imgc)>500){
 				$img_x=imagesx($imgc);
 				$img_y=imagesy($imgc);
 
 				if ($img_x==$img_y)
 				{
-					$dstW=256; // ширина
-					$dstH=256; // высота 
+					$dstW=500; // ширина
+					$dstH=500; // высота 
 				}
 				elseif ($img_x>$img_y)
 				{
 					$prop=$img_x/$img_y;
-					$dstW=256;
+					$dstW=500;
 					$dstH=ceil($dstW/$prop);
 				}else{
 					$prop=$img_y/$img_x;
-					$dstH=256;
+					$dstH=500;
 					$dstW=ceil($dstH/$prop);
 				}
 
@@ -57,11 +64,11 @@ if (imagesx($imgc)>1 || imagesy($imgc)>256){
 				@chmod($_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.jpg',0777);
 				imagedestroy($screen);
 }else{
-copy($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.jpg');
+move_uploaded_file($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.jpg');
 }
 $err .= '<div class="erors"><center>Аватар успешно установлен</center></div>';
 }
-elseif (preg_match('#\.gif$#i',$_FILES['file']['name']) && $imgc=@imagecreatefromgif($_FILES['file']['tmp_name']))
+elseif ($upload_ok && preg_match('#\.gif$#i',$_FILES['file']['name']) && $imgc=@imagecreatefromgif($_FILES['file']['tmp_name']))
 {
 $avs=glob($_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'*');
 if ($avs)
@@ -73,37 +80,39 @@ foreach ($avs as $value)
 }
 }
 
-copy($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.gif');
+move_uploaded_file($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.gif');
 @chmod($_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.gif',0777);
 
 $err .= '<div class="erors"><center>Аватар успешно установлен</center></div>';
 }
-elseif (preg_match('#\.png$#i',$_FILES['file']['name']) && $imgc=@imagecreatefrompng($_FILES['file']['tmp_name']))
+elseif ($upload_ok && preg_match('#\.png$#i',$_FILES['file']['name']) && $imgc=@imagecreatefrompng($_FILES['file']['tmp_name']))
 {
-if (imagesx($imgc)>256 || imagesy($imgc)>256)
+if (imagesx($imgc)>500 || imagesy($imgc)>500)
 {
 
 					$img_x=imagesx($imgc);
 					$img_y=imagesy($imgc);
 					if ($img_x==$img_y)
 					{
-					$dstW=256; // ширина
-					$dstH=256; // высота 
+					$dstW=500; // ширина
+					$dstH=500; // высота 
 					}
 					elseif ($img_x>$img_y)
 					{
 					$prop=$img_x/$img_y;
-					$dstW=256;
+					$dstW=500;
 					$dstH=ceil($dstW/$prop);
 					}
 					else
 					{
 					$prop=$img_y/$img_x;
-					$dstH=256;
+					$dstH=500;
 					$dstW=ceil($dstH/$prop);
 					}
 
-					$screen=ImageCreate($dstW, $dstH);
+                    $screen=imagecreatetruecolor($dstW, $dstH);
+                    imagealphablending($screen, false);
+                    imagesavealpha($screen, true);
 					imagecopyresampled($screen, $imgc, 0, 0, 0, 0, $dstW, $dstH, $img_x, $img_y);
 					imagedestroy($imgc);
 
@@ -122,12 +131,12 @@ if (imagesx($imgc)>256 || imagesy($imgc)>256)
 					@chmod($_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.png',0777);
 					imagedestroy($screen);
 }else{
-copy($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT']."/files/ava/$user[id].png");
+move_uploaded_file($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.png');
 }
 
 $err .= '<div class="erors"><center>Аватар успешно установлен</center></div>';
 }else{
-$err .= '<div class="erors"><center>Неверный формат</center></div>';
+if ($upload_ok)$err .= '<div class="erors"><center>Неверный формат</center></div>';
 }
 }
 echo '</div>';

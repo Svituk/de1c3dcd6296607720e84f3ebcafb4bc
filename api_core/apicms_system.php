@@ -362,9 +362,13 @@ $oc = getOS($_SERVER['HTTP_USER_AGENT']);
 /////////////////////////////////// #64х64 ава
 function avatar_path($id_user){
 global $ava;
-$ava=glob($_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$id_user.'*');
-if ($ava)return str_replace($_SERVER['DOCUMENT_ROOT'],'',$ava[0]);
-else
+$ava = glob($_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$id_user.'*');
+if ($ava){
+    $full = $ava[0];
+    $rel = str_replace($_SERVER['DOCUMENT_ROOT'],'',$full);
+    $ts = @filemtime($full);
+    return $ts ? ($rel.'?v='.$ts) : $rel;
+}
 return false;
 }
 ///////////////////////////////////

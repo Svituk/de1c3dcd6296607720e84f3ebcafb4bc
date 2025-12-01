@@ -35,10 +35,10 @@ $check_ban_row = mysqli_fetch_assoc($check_ban);
 if ($unset_id && $check_ban_row['cnt']>0){
 $block_inf=mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `users_ban` WHERE `ank_ban` = '".intval($ank['id'])."' AND `id` = '".$unset_id."'"));
 $ank2=mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = '".intval($block_inf['ank_ban'])."' LIMIT 1"));
-$min_block = $ank2['block_count']-1;
+$min_block = max(0, intval($ank2['block_count']) - 1);
 if ($user['level']>=1){
-mysqli_query($connect, "UPDATE `users_ban` SET `time` = '".time()."' WHERE `id` = '".$unset_id."' LIMIT 1");
-mysqli_query($connect, "UPDATE `users` SET `block_count` = '$min_block', `block_time` = '$time' WHERE `id` = '".$unset_id."' LIMIT 1");
+mysqli_query($connect, "DELETE FROM `users_ban` WHERE `id` = '".$unset_id."' LIMIT 1");
+mysqli_query($connect, "UPDATE `users` SET `block_count` = '".$min_block."', `block_time` = '".(time()-1)."' WHERE `id` = '".intval($ank['id'])."' LIMIT 1");
 echo '<div class="apicms_content"><center>Пользователь успешно разблокирован</center></div>';
 }
 else

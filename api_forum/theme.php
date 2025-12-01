@@ -42,11 +42,11 @@ if ($theme_name['close']==1) echo '<div class="erors">Тема закрыта д
 $reloads = rand(100, 99999);
 
 echo '<div class="apicms_subhead"><table width="100%" ><tr>';
-if ($theme_name['close']==0 && ($theme_name['id_user']==$user['id'] || $user['level']==1 || $user['level']==2))echo '<td width="25%"><center><a href="theme_close.php?id='.$theme_name['id'].'"><img src="/design/styles/'.htmlspecialchars($api_design).'/forum/theme_close.png"></a></center></td>';
-if ($theme_name['close']==1 && ($theme_name['id_user']==$user['id'] || $user['level']==1 || $user['level']==2))echo '<td width="25%"><center><a href="theme_open.php?id='.$theme_name['id'].'"><img src="/design/styles/'.htmlspecialchars($api_design).'/forum/theme_open.png"></a></center></td>';
+if ($theme_name['close']==0 && ($is_user && ($theme_name['id_user']==$user_id || $user_level==1 || $user_level==2)))echo '<td width="25%"><center><a href="theme_close.php?id='.$theme_name['id'].'"><img src="/design/styles/'.htmlspecialchars($api_design).'/forum/theme_close.png"></a></center></td>';
+if ($theme_name['close']==1 && ($is_user && ($theme_name['id_user']==$user_id || $user_level==1 || $user_level==2)))echo '<td width="25%"><center><a href="theme_open.php?id='.$theme_name['id'].'"><img src="/design/styles/'.htmlspecialchars($api_design).'/forum/theme_open.png"></a></center></td>';
 echo '<td width="25%"><center><a href="theme.php?id='.$theme_name['id'].'&'.$reloads.'"><img src="/design/styles/'.htmlspecialchars($api_design).'/forum/reload.png"></a></center></td> ';
-if ($theme_name['close']==0 && ($theme_name['id_user']==$user['id'] || $user['level']==1 || $user['level']==2))echo '<td width="25%"><center><a href="del_theme.php?id='.$theme_name['id'].'"><img src="/design/styles/'.htmlspecialchars($api_design).'/forum/del_theme.png"></a></center></td>';
-if ($theme_name['close']==0 && ($theme_name['id_user']==$user['id'] || $user['level']==1 || $user['level']==2))echo '<td width="25%"><center><a href="edit_theme.php?id='.$theme_name['id'].'"><img src="/design/styles/'.htmlspecialchars($api_design).'/forum/edit_theme.png"></a></center></td>';
+if ($theme_name['close']==0 && ($is_user && ($theme_name['id_user']==$user_id || $user_level==1 || $user_level==2)))echo '<td width="25%"><center><a href="del_theme.php?id='.$theme_name['id'].'"><img src="/design/styles/'.htmlspecialchars($api_design).'/forum/del_theme.png"></a></center></td>';
+if ($theme_name['close']==0 && ($is_user && ($theme_name['id_user']==$user_id || $user_level==1 || $user_level==2)))echo '<td width="25%"><center><a href="edit_theme.php?id='.$theme_name['id'].'"><img src="/design/styles/'.htmlspecialchars($api_design).'/forum/edit_theme.png"></a></center></td>';
 echo '</td></tr></table></div>';
 
 /////////////////////////////////////////
@@ -84,9 +84,9 @@ echo "<br/> <b>".apicms_smiles(apicms_br(htmlspecialchars($post_post['text']))).
 if ($post_post['edit']==1 && $post_post['delete']==0) echo ' <br/> <small>Изменено: '.apicms_data($post_post['edit_time']).'</small>';
 if ($post_post['delete']==1) echo ' <br/> <small>Удалено: '.apicms_data($post_post['delete_time']).'</small>';
 echo '<br/>';
-if ($post_post['delete']==0 && ($post_post['id_user']==$user['id'] || $user['level']==1 || $user['level']==2))echo '<small><a href="edit_post.php?id='.$theme_name['id'].'&post='.$post_post['id'].'">Редактировать</a>  / </small>';
-if ($user['id'] && $user['id']!=$post_post['id_user'] && ($theme_name['close']==0 && $post_post['delete']==0))echo ' <small> <a href="reply.php?id='.$theme_name['id'].'&user='.$who_post['id'].'">Ответить</a> / </small>';
-if ($post_post['delete']==0 && ($post_post['id_user']==$user['id'] || $user['level']==1 || $user['level']==2))echo ' <small> <a href="delete_post.php?id='.$post_post['id'].'&theme='.$theme_name['id'].'">Удалить</a></small>';
+if ($post_post['delete']==0 && ($is_user && ($post_post['id_user']==$user_id || $user_level==1 || $user_level==2)))echo '<small><a href="edit_post.php?id='.$theme_name['id'].'&post='.$post_post['id'].'">Редактировать</a>  / </small>';
+if ($is_user && $user_id!=$post_post['id_user'] && ($theme_name['close']==0 && $post_post['delete']==0))echo ' <small> <a href="reply.php?id='.$theme_name['id'].'&user='.$who_post['id'].'">Ответить</a> / </small>';
+if ($post_post['delete']==0 && ($is_user && ($post_post['id_user']==$user_id || $user_level==1 || $user_level==2)))echo ' <small> <a href="delete_post.php?id='.$post_post['id'].'&theme='.$theme_name['id'].'">Удалить</a></small>';
 echo "</td></tr></table></div>";
 }
 
@@ -97,7 +97,7 @@ str('theme.php?id='.$theme_id.'&',$k_page,$page); // генерируем пос
 echo '</center></div>';
 }
 //////////////////////////////////////////////////////////
-if ($user['id'] && $theme_name['close']==0){
+if ($is_user && $theme_name['close']==0){
 echo "<form action='/api_forum/theme.php?id=".$theme_id."&page=end&ok' method='post'>";
 echo "<div class='apicms_dialog'><center><textarea name='txt'></textarea><br />";
 echo "<input type='submit' value='Добавить'/></form></center></div>";

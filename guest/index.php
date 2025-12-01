@@ -37,8 +37,10 @@ apicms_error($err);
 }
 if (!$is_user){
 if (isset($_POST['txt'])){
-$raw = isset($_POST['txt']) ? $_POST['txt'] : '';
-if ($_POST['code'] != $_SESSION['captcha'])$err = '<div class="apicms_content"><center>Неверное проверочное число</center></div>';
+    $raw = isset($_POST['txt']) ? $_POST['txt'] : '';
+    $code = isset($_POST['code']) ? $_POST['code'] : '';
+    if ($code === '') $err = '<div class="apicms_content"><center>Вы не ввели проверочное число</center></div>';
+    else if (!isset($_SESSION['captcha']) || $code != $_SESSION['captcha']) $err = '<div class="apicms_content"><center>Неверное проверочное число</center></div>';
 $len = mb_strlen($raw, 'UTF-8');
 if ($len>1024)$err = '<div class="apicms_content"><center>Очень длинное сообщение</center></div>';
 if ($len<10)$err = '<div class="apicms_content"><center>Короткое сообщение</center></div>';

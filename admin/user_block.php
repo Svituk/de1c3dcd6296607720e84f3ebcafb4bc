@@ -16,6 +16,7 @@ header("Location: /index.php");
 exit;
 }
 /////////////////////////////////////////
+$unset_id = isset($_GET['unset']) ? intval($_GET['unset']) : 0;
 $check_user = mysqli_query($connect, "SELECT COUNT(*) as cnt FROM `users` WHERE `id` = '".intval($ank['id'])."' LIMIT 1");
 $check_user_row = mysqli_fetch_assoc($check_user);
 if ($check_user_row['cnt']==0){
@@ -29,15 +30,15 @@ exit;
 }
 $ank=mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = '".intval($ank['id'])."' LIMIT 1"));
 /////////////////////////////////////////
-$check_ban = mysqli_query($connect, "SELECT COUNT(*) as cnt FROM `users_ban` WHERE `ank_ban` = '".intval($ank['id'])."' AND `id` = '".intval($_GET['unset'])."'");
+$check_ban = mysqli_query($connect, "SELECT COUNT(*) as cnt FROM `users_ban` WHERE `ank_ban` = '".intval($ank['id'])."' AND `id` = '".$unset_id."'");
 $check_ban_row = mysqli_fetch_assoc($check_ban);
-if (isset($_GET['unset']) && $check_ban_row['cnt']>0){
-$block_inf=mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `users_ban` WHERE `ank_ban` = '".intval($ank['id'])."' AND `id` = '".intval($_GET['unset'])."'"));
+if ($unset_id && $check_ban_row['cnt']>0){
+$block_inf=mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `users_ban` WHERE `ank_ban` = '".intval($ank['id'])."' AND `id` = '".$unset_id."'"));
 $ank2=mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = '".intval($block_inf['ank_ban'])."' LIMIT 1"));
 $min_block = $ank2['block_count']-1;
 if ($user['level']>=1){
-mysqli_query($connect, "UPDATE `users_ban` SET `time` = '".time()."' WHERE `id` = '".intval($_GET['unset'])."' LIMIT 1");
-mysqli_query($connect, "UPDATE `users` SET `block_count` = '$min_block', `block_time` = '$time' WHERE `id` = '".intval($_GET['unset'])."' LIMIT 1");
+mysqli_query($connect, "UPDATE `users_ban` SET `time` = '".time()."' WHERE `id` = '".$unset_id."' LIMIT 1");
+mysqli_query($connect, "UPDATE `users` SET `block_count` = '$min_block', `block_time` = '$time' WHERE `id` = '".$unset_id."' LIMIT 1");
 echo '<div class="apicms_content"><center>Пользователь успешно разблокирован</center></div>';
 }
 else

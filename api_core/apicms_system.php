@@ -369,6 +369,17 @@ if ($ava){
     $ts = @filemtime($full);
     return $ts ? ($rel.'?v='.$ts) : $rel;
 }
+///////////////////////////////////
+if (!function_exists('profile_url_by_id')){
+function profile_url_by_id($id_user){
+global $connect;
+$row = mysqli_fetch_assoc(mysqli_query($connect, "SELECT `login` FROM `users` WHERE `id` = '".intval($id_user)."' LIMIT 1"));
+if ($row && isset($row['login']) && $row['login']!==''){
+    return '/'.rawurlencode($row['login']);
+}
+return '/profile.php?id='.intval($id_user);
+}
+}
 return false;
 }
 ///////////////////////////////////

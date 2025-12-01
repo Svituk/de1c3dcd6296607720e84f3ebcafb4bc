@@ -3,16 +3,31 @@
 ///////////////////////////////////
 require_once 'api_core/apicms_system.php';
 ///////////////////////////////////
-if (!isset($user['id']) && !isset($_GET['id'])){header("Location: /index.php?");exit;}
-if (isset($user['id']))$ank['id']=intval($user['id']);
-if (isset($_GET['id']))$ank['id']=intval($_GET['id']);
+if (isset($_GET['username'])){
+    $uname = apicms_filter($_GET['username']);
+    $res_user = mysqli_query($connect, "SELECT * FROM `users` WHERE `login` = '".mysqli_real_escape_string($connect, $uname)."' LIMIT 1");
+    $row_user = mysqli_fetch_assoc($res_user);
+    if ($row_user){
+        $ank = $row_user;
+        $ank['id'] = intval($ank['id']);
+    } else {
+        header("Location: /error/404.php");
+        exit;
+    }
+} else {
+    if (!isset($user['id']) && !isset($_GET['id'])){header("Location: /index.php?");exit;}
+    if (isset($user['id']))$ank['id']=intval($user['id']);
+    if (isset($_GET['id']))$ank['id']=intval($_GET['id']);
+}
 // Guard user level for later checks
 $user_level = isset($user['level']) ? intval($user['level']) : 0;
 global $connect;
-$check_user = mysqli_query($connect, "SELECT COUNT(*) as cnt FROM `users` WHERE `id` = '".intval($ank['id'])."' LIMIT 1");
-$check_row = mysqli_fetch_assoc($check_user);
-if ($check_row['cnt']==0){header("Location: /index.php?");exit;}
-$ank=mysqli_fetch_array(mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = '".intval($ank['id'])."' LIMIT 1"));
+if (!isset($_GET['username'])){
+    $check_user = mysqli_query($connect, "SELECT COUNT(*) as cnt FROM `users` WHERE `id` = '".intval($ank['id'])."' LIMIT 1");
+    $check_row = mysqli_fetch_assoc($check_user);
+    if ($check_row['cnt']==0){header("Location: /index.php?");exit;}
+    $ank=mysqli_fetch_array(mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = '".intval($ank['id'])."' LIMIT 1"));
+}
 ///////////////////////////////////
 $login_safe = isset($ank['login']) ? htmlspecialchars($ank['login']) : '';
 $title = ''.$login_safe.' - Личная страница / '.status($ank['id']).'';

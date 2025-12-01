@@ -23,7 +23,7 @@ $ank2=mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `users` WHERE `id
 if (!$ank2) $ank2 = array('id' => 0, 'login' => 'Гость', 'name' => '');
 echo '<div class="apicms_subhead"><table width="100%" ><tr><td width="20%"><center>';
 echo apicms_ava32($ank2['id']);
-echo "</center></td><td width='80%'><a href='/profile.php?id=$ank2[id]'>".htmlspecialchars(isset($ank2['login']) ? $ank2['login'] : 'Гость')."</a> ( ".htmlspecialchars(isset($ank2['name']) ? $ank2['name'] : '').") </br>Добавлен: ".apicms_data($post_cont['time'])."</span>";
+echo "</center></td><td width='80%'><a href='".profile_url_by_id(intval($ank2['id']))."'>".htmlspecialchars(isset($ank2['login']) ? $ank2['login'] : 'Гость')."</a> ( ".htmlspecialchars(isset($ank2['name']) ? $ank2['name'] : '').") </br>Добавлен: ".apicms_data($post_cont['time'])."</span>";
 echo "</br><a href='/modules/user_mail.php?id=".$ank2['id']."'>Написать приватно</a></b></td></tr></table></div>";
 }
 if ($k_page > 1){

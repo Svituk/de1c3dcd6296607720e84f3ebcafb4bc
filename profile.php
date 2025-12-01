@@ -22,9 +22,27 @@ echo '<div class="apicms_content">';
 if ($ank['block_time']>=$time){
 echo '<b><center>Пользователь заблокирован до '.apicms_data($ank['block_time']).'</center></b>';
 }
-echo '<center>';
-echo apicms_ava64($ank['id']);
-echo '</center></br>';
+$ava_path = avatar_path($ank['id']);
+if (!$ava_path) $ava_path = '/files/ava/0.png';
+$ava_noqs = strpos($ava_path, '?') !== false ? substr($ava_path, 0, strpos($ava_path, '?')) : $ava_path;
+$abs = $_SERVER['DOCUMENT_ROOT'].$ava_noqs;
+$size = @getimagesize($abs);
+$w = $size ? intval($size[0]) : 0;
+$h = $size ? intval($size[1]) : 0;
+$needs_modal = ($w>256 || $h>256);
+echo '<style>
+#ava-modal{position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:9999}
+#ava-modal:target{display:flex}
+#ava-modal img{max-width:90vw;max-height:90vh;border:8px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,.4)}
+.ava-close{position:absolute;top:20px;right:30px;color:#fff;font-size:28px;text-decoration:none}
+.ava-frame img{max-width:256px;max-height:256px;width:auto;height:auto;border:1px solid #e8e8ea}
+</style>';
+echo '<div class="ava-frame"><center>';
+if ($needs_modal) echo '<a href="#ava-modal">';
+echo '<img src="'.$ava_path.'" alt="" />';
+if ($needs_modal) echo '</a>';
+echo '</center></div>';
+echo '<div id="ava-modal"><a class="ava-close" href="#">×</a><img src="'.$ava_path.'" alt="" /></div>';
 echo '</div>';
 ////////////////////////////////////////
 echo '<div class="apicms_subhead">';

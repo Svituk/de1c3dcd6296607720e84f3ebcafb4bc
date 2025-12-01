@@ -28,23 +28,23 @@ $err = '';
     elseif (isset($_FILES['file']['size']) && $_FILES['file']['size'] > 2*1024*1024){ $err .= '<div class="erors"><center>Слишком большой файл (макс 2 МБ)</center></div>'; $upload_ok = false; }
     else { $info = @getimagesize($_FILES['file']['tmp_name']); $mime = $info && isset($info['mime']) ? $info['mime'] : ''; if ($mime!== 'image/jpeg' && $mime!== 'image/png' && $mime!== 'image/gif'){ $err .= '<div class="erors"><center>Неверный формат изображения</center></div>'; $upload_ok = false; } }
     if ($upload_ok && preg_match('#\.jpe?g$#i',$_FILES['file']['name']) && $imgc=@imagecreatefromjpeg($_FILES['file']['tmp_name'])){
-if (imagesx($imgc)>500 || imagesy($imgc)>500){
+if (imagesx($imgc)>800 || imagesy($imgc)>800){
 				$img_x=imagesx($imgc);
 				$img_y=imagesy($imgc);
 
 				if ($img_x==$img_y)
 				{
-					$dstW=500; // ширина
-					$dstH=500; // высота 
+                    $dstW=800; // ширина
+                    $dstH=800; // высота 
 				}
 				elseif ($img_x>$img_y)
 				{
 					$prop=$img_x/$img_y;
-					$dstW=500;
+                    $dstW=800;
 					$dstH=ceil($dstW/$prop);
 				}else{
 					$prop=$img_y/$img_x;
-					$dstH=500;
+                    $dstH=800;
 					$dstW=ceil($dstH/$prop);
 				}
 
@@ -87,26 +87,26 @@ $err .= '<div class="erors"><center>Аватар успешно установл
 }
 elseif ($upload_ok && preg_match('#\.png$#i',$_FILES['file']['name']) && $imgc=@imagecreatefrompng($_FILES['file']['tmp_name']))
 {
-if (imagesx($imgc)>500 || imagesy($imgc)>500)
+if (imagesx($imgc)>800 || imagesy($imgc)>800)
 {
 
 					$img_x=imagesx($imgc);
 					$img_y=imagesy($imgc);
 					if ($img_x==$img_y)
 					{
-					$dstW=500; // ширина
-					$dstH=500; // высота 
+                    $dstW=800; // ширина
+                    $dstH=800; // высота 
 					}
 					elseif ($img_x>$img_y)
 					{
 					$prop=$img_x/$img_y;
-					$dstW=500;
+                    $dstW=800;
 					$dstH=ceil($dstW/$prop);
 					}
 					else
 					{
 					$prop=$img_y/$img_x;
-					$dstH=500;
+                    $dstH=800;
 					$dstW=ceil($dstH/$prop);
 					}
 

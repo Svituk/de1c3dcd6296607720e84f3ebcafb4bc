@@ -4,12 +4,11 @@
 ////////////////////////////////////////
 $title = 'Редактирование аккаунта';
 require_once '../api_core/apicms_system.php';
+if (!isset($user['id']) || !$user['id']) { header('Location: /'); exit; }
 require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
-////////////////////////////////////////
-if (!$user['id']) header('location: /');
 
 global $connect;
-$my_sets = mysqli_real_escape_string($connect, $_POST['set_theme']);
+$my_sets = isset($_POST['set_theme']) ? mysqli_real_escape_string($connect, $_POST['set_theme']) : '';
 ///////////////////////////////////
 if (isset($_POST['save'])){
 ///////////////////////////////////
@@ -48,19 +47,19 @@ echo '<div class="apicms_content"><center>Изменения в анкету в�
 echo "<form method='post' action='?ok'>\n";
 ///////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "Ваше имя: </br> <input type='text' name='name' value='".htmlentities($user['name'], ENT_QUOTES, 'UTF-8')."'  /><br />\n";
+echo "Ваше имя: </br> <input type='text' name='name' value='".htmlentities(isset($user['name']) ? $user['name'] : '', ENT_QUOTES, 'UTF-8')."'  /><br />\n";
 echo '</div>';
 ///////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "Ваша фамилия: </br> <input type='text' name='surname' value='".htmlentities($user['surname'], ENT_QUOTES, 'UTF-8')."'  /><br />\n";
+echo "Ваша фамилия: </br> <input type='text' name='surname' value='".htmlentities(isset($user['surname']) ? $user['surname'] : '', ENT_QUOTES, 'UTF-8')."'  /><br />\n";
 echo '</div>';
 ///////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "Ваша страна: </br> <input type='text' name='country' value='".htmlentities($user['country'], ENT_QUOTES, 'UTF-8')."'  /><br />\n";
+echo "Ваша страна: </br> <input type='text' name='country' value='".htmlentities(isset($user['country']) ? $user['country'] : '', ENT_QUOTES, 'UTF-8')."'  /><br />\n";
 echo '</div>';
 ///////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "Ваш город: </br> <input type='text' name='city' value='".htmlentities($user['city'], ENT_QUOTES, 'UTF-8')."'  /><br />\n";
+echo "Ваш город: </br> <input type='text' name='city' value='".htmlentities(isset($user['city']) ? $user['city'] : '', ENT_QUOTES, 'UTF-8')."'  /><br />\n";
 echo '</div>';
 ///////////////////////////////////
 echo '<div class="apicms_subhead">';
@@ -75,7 +74,7 @@ echo "</select><br />\n";
 echo '</div>';
 ///////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "E-mail: <br/><input type='text' name='email' value='".htmlentities($user['email'], ENT_QUOTES, 'UTF-8')."'  /><br />\n";
+echo "E-mail: <br/><input type='text' name='email' value='".htmlentities(isset($user['email']) ? $user['email'] : '', ENT_QUOTES, 'UTF-8')."'  /><br />\n";
 echo '</div>';
 ///////////////////////////////////
 echo "<div class='apicms_subhead'><center><input type='submit' name='save' value='Сохранить' /></center></div>\n";

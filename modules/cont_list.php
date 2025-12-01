@@ -6,7 +6,7 @@ $title = 'Мой список контактов';
 require_once '../api_core/apicms_system.php';
 require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
 
-if ($user['id']){
+if (isset($user['id']) && $user['id']){
 /////////////////////////////////////////
 global $connect;
 $k_post_result = mysqli_query($connect, "SELECT COUNT(*) as cnt FROM `contact_list` WHERE `my_id` = '".intval($user['id'])."'");
@@ -20,9 +20,10 @@ if ($k_post==0)echo "<div class='erors'><center>Ваш контакт-лист �
 $qii=mysqli_query($connect, "SELECT * FROM `contact_list` WHERE `my_id` = '".intval($user['id'])."' ORDER BY id DESC LIMIT $start, ".$api_settings['on_page']);
 while ($post_cont = mysqli_fetch_assoc($qii)){
 $ank2=mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = ".intval($post_cont['id_user'])." LIMIT 1"));
+if (!$ank2) $ank2 = array('id' => 0, 'login' => 'Гость', 'name' => '');
 echo '<div class="apicms_subhead"><table width="100%" ><tr><td width="20%"><center>';
 echo apicms_ava32($ank2['id']);
-echo "</center></td><td width='80%'><a href='/profile.php?id=$ank2[id]'>".htmlspecialchars($ank2['login'])."</a> ( ".htmlspecialchars($ank2['name']).") </br>Добавлен: ".apicms_data($post_cont['time'])."</span>";
+echo "</center></td><td width='80%'><a href='/profile.php?id=$ank2[id]'>".htmlspecialchars(isset($ank2['login']) ? $ank2['login'] : 'Гость')."</a> ( ".htmlspecialchars(isset($ank2['name']) ? $ank2['name'] : '').") </br>Добавлен: ".apicms_data($post_cont['time'])."</span>";
 echo "</br><a href='/modules/user_mail.php?id=".$ank2['id']."'>Написать приватно</a></b></td></tr></table></div>";
 }
 if ($k_page > 1){

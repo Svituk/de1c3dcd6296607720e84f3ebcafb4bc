@@ -10,6 +10,9 @@ global $connect;
 if ($is_user){
 $msg = '';
 if (isset($_POST['save'])){
+    if (!csrf_check()){
+        $msg = '<div class="erors"><center>Неверный CSRF-токен</center></div>';
+    } else {
     $name = isset($_POST['name']) ? $_POST['name'] : '';
     $text = isset($_POST['text']) ? $_POST['text'] : '';
     $cat = isset($_POST['cat']) ? intval($_POST['cat']) : 0;
@@ -28,11 +31,13 @@ if (isset($_POST['save'])){
     } else {
         $msg = '<div class="erors"><center>Проверьте название (минимум 3) и текст (минимум 20)</center></div>';
     }
+    }
 }
 if ($msg !== '') echo $msg;
 ////////////////////////////////////////
 echo "<form method='post' action='?ok'>\n";
-echo "<div class='apicms_subhead'>Название статьи: </br> <input type='text' name='name' value=''  /> <br /> Текст статьи: </br> <textarea name='text'></textarea\n";
+echo "<input type='hidden' name='csrf_token' value='".htmlspecialchars(csrf_token())."' />";
+echo "<div class='apicms_subhead'>Название статьи: </br> <input type='text' name='name' value=''  /> <br /> Текст статьи: </br> <textarea name='text'></textarea></br>";
 echo '</br><select name="cat">';
 $cats = mysqli_query($connect, "SELECT * FROM `api_lib_cat` ORDER BY `id` ASC");
 if(mysqli_num_rows($cats) > 0){
@@ -44,7 +49,7 @@ echo '</select></div>';
 /////////////////////////////////////
 echo "<div class='apicms_subhead'><center><input type='submit' name='save' value='Создать статью' /></center></div>\n";
 }else{
-echo "<div class='apicms_content'><center>Авторизуйтесь, чтобы создать статью</center></div\n";
+echo "<div class='apicms_content'><center>Авторизуйтесь, чтобы создать статью</center></div>\n";
 }
 ////////////////////////////////////////
 require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';

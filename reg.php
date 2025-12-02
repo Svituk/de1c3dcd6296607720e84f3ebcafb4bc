@@ -47,11 +47,13 @@ if ($code !== '' && isset($_SESSION['captcha']) && $code != $_SESSION['captcha']
 if (intval($pol)<0 || intval($pol)>2 || $pol==='')$err = '<div class="erors">Вы не выбрали вашу стать</div>';
 
 if (!isset($err)){
-////////////////////////////////////////			
-mysqli_query($connect, "INSERT INTO `users` SET `login` = '$login', `activ_mail` = '1', `pass` = '".md5(md5($pass))."', `email` = '$email', `sex` = '".intval($pol)."', `regtime` = '".time()."', `last_aut` = '".time()."'");
-////////////////////////////////////////		
-unset($_SESSION['captcha']);
-echo '<div class="apicms_content"><center>Регистрация прошла успешно! Аккаунт активирован.</center></div>';
+    $hash = password_hash($pass, PASSWORD_DEFAULT);
+    $stmt = mysqli_prepare($connect, "INSERT INTO `users` (`login`,`activ_mail`,`pass`,`email`,`sex`,`regtime`,`last_aut`) VALUES (?,?,?,?,?,?,?)");
+    $one = 1; $regt = time(); $last = $regt; $sexi = intval($pol);
+    mysqli_stmt_bind_param($stmt, 'sissiii', $login, $one, $hash, $email, $sexi, $regt, $last);
+    mysqli_stmt_execute($stmt);
+    unset($_SESSION['captcha']);
+    echo '<div class="apicms_content"><center>Регистрация прошла успешно! Аккаунт активирован.</center></div>';
 }else{
 apicms_error($err);
 }

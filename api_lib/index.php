@@ -34,7 +34,11 @@ str('index.php?',$k_page,$page); // генерируем постраничну�
 echo '</center></div>';
 }
 /////////////////////////////////////////
-if (!empty($user) && isset($user['level']) && ($user['level']==1 || $user['level']==2))echo "<div class='apicms_subhead'> <table width='100%' ><tr><td width='50%'><center> <a href='lib_cat.php'>Создать раздел</a> </center></td><td width='50%'><center> <a href='new_article.php'>Создать статью</a></center></td></tr></table></div>";
+if (!empty($user) && isset($user['level']) && ($user['level']==1 || $user['level']==2)){
+echo "<div class='apicms_subhead'> <table width='100%' ><tr><td width='50%'><center> <a href='lib_cat.php'>Создать раздел</a> </center></td><td width='50%'><center> <a href='new_article.php'>Создать статью</a></center></td></tr></table></div>";
+} elseif ($is_user) {
+echo "<div class='apicms_subhead'><center><a href='new_article.php'>Создать статью</a></center></div>";
+}
 /////////////////////////////////////////
 require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
 ?>

@@ -30,7 +30,12 @@ echo '<?xml version="1.0" encoding="utf-8" core="api"?>
 // Use root-relative paths so design loads regardless of host variable
 echo '<link rel="shortcut icon" href="/design/styles/'.htmlspecialchars($api_design).'/favicon.ico"/>';
 ////////////////////////////////////////
-echo '<link rel="stylesheet" href="/design/styles/'.htmlspecialchars($api_design).'/style.php" type="text/css"/>';
+// Prefer static CSS; fallback to PHP style if needed
+if (file_exists($_SERVER['DOCUMENT_ROOT'].'/design/styles/'.htmlspecialchars($api_design).'/style.css')){
+    echo '<link rel="stylesheet" href="/design/styles/'.htmlspecialchars($api_design).'/style.css" type="text/css"/>';
+} else {
+    echo '<link rel="stylesheet" href="/design/styles/'.htmlspecialchars($api_design).'/style.php" type="text/css"/>';
+}
 ////////////////////////////////////////
 if ($_SERVER['PHP_SELF']=='/index.php'){
 echo '<title>'.$api_settings['title'].'</title></head><body>';

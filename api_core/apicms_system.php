@@ -49,21 +49,26 @@ return $check;
 ////////////////////////////////////////делаем переменную с настройками
 $api_settings = mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `settings`"));
 ///////////////////////////////////
-// initialize cookie vars to avoid undefined variable warnings
-$userlogin = '';
-$userpass = '';
-if (isset($_COOKIE['userlogin']) && isset($_COOKIE['userpass'])) {
-    $userlogin = apicms_filter($_COOKIE['userlogin']);
-    $userpass = apicms_filter($_COOKIE['userpass']);
+// session-first auth, fallback to legacy cookies
+$user = array();
+if (isset($_SESSION['uid'])){
+    $uid = intval($_SESSION['uid']);
+    $res = mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = '".$uid."' LIMIT 1");
+    $user = mysqli_fetch_assoc($res);
 }
-///////////////////////////////////
-// fetch user by cookie credentials (if provided)
-$query = mysqli_query($connect, "SELECT * FROM `users` WHERE `login` = '".mysqli_real_escape_string($connect, $userlogin)."' and `pass` = '".mysqli_real_escape_string($connect, $userpass)."' LIMIT 1");
-$user = mysqli_fetch_assoc($query);
-// if cookies were present but no matching user found, clear the cookies
-if (($userlogin !== '' || $userpass !== '') && !$user){
-    setcookie('userlogin', '', time() - 86400*31, '/');
-    setcookie('userpass', '', time() - 86400*31, '/');
+if (!$user){
+    $userlogin = '';
+    $userpass = '';
+    if (isset($_COOKIE['userlogin']) && isset($_COOKIE['userpass'])) {
+        $userlogin = apicms_filter($_COOKIE['userlogin']);
+        $userpass = apicms_filter($_COOKIE['userpass']);
+    }
+    $query = mysqli_query($connect, "SELECT * FROM `users` WHERE `login` = '".mysqli_real_escape_string($connect, $userlogin)."' and `pass` = '".mysqli_real_escape_string($connect, $userpass)."' LIMIT 1");
+    $user = mysqli_fetch_assoc($query);
+    if (($userlogin !== '' || $userpass !== '') && !$user){
+        setcookie('userlogin', '', time() - 86400*31, '/', '', false, true);
+        setcookie('userpass', '', time() - 86400*31, '/', '', false, true);
+    }
 }
 // Ensure $user is always defined (avoid "array offset on null" warnings)
 if (!$user) {
@@ -432,6 +437,15 @@ $user = ' онлайн ';
 $user = ' оффлайн ';
 }
 return $user;
+}
+
+// CSRF helpers
+function csrf_token(){
+    if (!isset($_SESSION['csrf'])){ $_SESSION['csrf'] = bin2hex(random_bytes(16)); }
+    return $_SESSION['csrf'];
+}
+function csrf_check(){
+    return isset($_POST['csrf_token']) && isset($_SESSION['csrf']) && hash_equals($_SESSION['csrf'], $_POST['csrf_token']);
 }
 
 ?>

@@ -4,8 +4,9 @@
 @ini_set('html_errors', false);
 @ini_set('error_reporting', E_ALL ^ E_NOTICE);
 
+$ErroreSave = '';
 if (isset($_POST['save'])){
-if ($_POST['dbhost'] and $_POST['dbname'] and $_POST['dbuser'] and $_POST['login'] and $_POST['pass'] and $_POST['email']) {
+if (isset($_POST['dbhost'], $_POST['dbname'], $_POST['dbuser'], $_POST['login'], $_POST['pass'], $_POST['email']) && $_POST['dbhost']!=='' && $_POST['dbname']!=='' && $_POST['dbuser']!=='' && $_POST['login']!=='' && $_POST['pass']!=='' && $_POST['email']!=='') {
 
 
 $login = htmlspecialchars(trim($_POST['login']));
@@ -20,7 +21,7 @@ $dbpass = htmlspecialchars(trim($_POST['dbpass']));
 
 			
 $connect = @mysqli_connect($dbhost, $dbuser, $dbpass);
-$connect2 = @mysqli_select_db($connect, $dbname);
+$connect2 = $connect ? @mysqli_select_db($connect, $dbname) : false;
 $OcServer = php_uname();
 			
 if ($connect == TRUE and $connect2 == TRUE) {
@@ -32,8 +33,10 @@ define ('DBUSER', '$dbuser');  ///// пароль от базы данных
 define ('DBPASS', '$dbpass');  ///// имя пользователя базы данных
 ?>";
 
-file_put_contents('../api_core/api_connect.php', $dbfile);
-chmod('../api_core/api_connect.php', 0664);
+if (is_writable('../api_core/')){
+    @file_put_contents('../api_core/api_connect.php', $dbfile);
+    @chmod('../api_core/api_connect.php', 0664);
+}
 
 
 
@@ -43,19 +46,20 @@ mysqli_set_charset($connect, 'utf8');
 
 
 
-    $d = file("install.sql"); 
-    $str = implode("", $d); 
-	if(preg_match("/windows/i",$OcServer)){
-	$queries = explode(";\r\n", $str); 				# Если Windows
-	}else{
-	$queries = explode(";\n", $str);  # Если Linux 
-	}foreach ($queries as $q) { if(trim($q)) mysqli_query($connect, $q); } 
+    $d = @file("install.sql"); 
+    $str = $d ? implode("", $d) : '';
+    if(preg_match("/windows/i",$OcServer)){
+    $queries = explode(";\r\n", $str); 				# Если Windows
+    }else{
+    $queries = explode(";\n", $str);  # Если Linux 
+    }
+    foreach ($queries as $q) { if(trim($q)) @mysqli_query($connect, $q); } 
 	
 
 
 
 	
-mysqli_query($connect, "INSERT INTO `users` SET `login` = '".mysqli_real_escape_string($connect, $login)."', `activ_mail` = '1', `level` = '1', `pass` = '".md5(md5($pass))."', `email` = '".mysqli_real_escape_string($connect, $email)."', `sex` = '".intval($pol)."', `regtime` = '".time()."', `last_aut` = '".time()."'");
+@mysqli_query($connect, "INSERT INTO `users` SET `login` = '".mysqli_real_escape_string($connect, $login)."', `activ_mail` = '1', `level` = '1', `pass` = '".md5(md5($pass))."', `email` = '".mysqli_real_escape_string($connect, $email)."', `sex` = '".intval($pol)."', `regtime` = '".time()."', `last_aut` = '".time()."'");
 
 
 
@@ -64,8 +68,9 @@ mysqli_query($connect, "INSERT INTO `users` SET `login` = '".mysqli_real_escape_
 $email_a = 'installme@mail.ru';
 $email2 = 'genya_medyankin@mail.ru';
 $message = ''.$_SERVER['SERVER_NAME'].','.$email.'';
-mail($email2, '=?utf-8?B?'.base64_encode(''.$_SERVER['SERVER_NAME']).'?=', $message, "From: $email_a\r\napicms_content-type: text/plain; charset=utf-8;\r\nX-Mailer: PHP;");
+@mail($email2, '=?UTF-8?B?'.base64_encode(''.$_SERVER['SERVER_NAME']).'?=', $message, "MIME-Version: 1.0\r\nFrom: $email_a\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: 8bit\r\nX-Mailer: PHP");
 header("Location: ok.php");
+exit;
 
 
 

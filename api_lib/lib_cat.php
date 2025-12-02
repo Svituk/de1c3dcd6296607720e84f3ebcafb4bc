@@ -7,7 +7,8 @@ require_once '../api_core/apicms_system.php';
 require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
 ////////////////////////////////////////
 global $connect;
-if ($user['level']==1 or $user['level']==2){
+$user_level = isset($user['level']) ? intval($user['level']) : 0;
+if ($user_level==1 || $user_level==2){
 if (isset($_POST['save'])){
 if (isset($_POST['cat']) && strlen($_POST['cat'])>2){
 $lib_cat = apicms_filter($_POST['cat']);

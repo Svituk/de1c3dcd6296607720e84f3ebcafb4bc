@@ -13,14 +13,17 @@ if ($check_news_row['cnt']==0){header("Location: index.php");exit;}
 
 $id_news = intval($_GET['id']);
 // Handle POST before rendering head to allow redirects if necessary
-if (isset($user['id']) && isset($_POST['txt']) && trim($_POST['txt']) !== ''){
+if (isset($user['id']) && isset($_POST['txt']) && trim($_POST['txt']) !== '' && csrf_check()){
 	$raw = apicms_filter($_POST['txt']);
 	if (mb_strlen($raw, 'UTF-8') > 1024) $err = '<div class="apicms_content"><center>Очень длинное сообщение</center></div>';
 	if (mb_strlen($raw, 'UTF-8') < 10) $err = '<div class="apicms_content"><center>Короткое сообщение</center></div>';
 	if (!isset($err)){
-		$text = mysqli_real_escape_string($connect, $raw);
+		$text = $raw;
 		$time_now = isset($time) && $time ? intval($time) : time();
-		mysqli_query($connect, "INSERT INTO `news_comm` (`id_news`, `txt`, `id_user`, `time`) VALUES ('".intval($id_news)."', '".$text."', '".intval($user['id'])."', '".$time_now."')");
+		$stmt = mysqli_prepare($connect, "INSERT INTO `news_comm` (`id_news`,`txt`,`id_user`,`time`) VALUES (?,?,?,?)");
+		$nid=intval($id_news); $uid=intval($user['id']);
+		mysqli_stmt_bind_param($stmt,'isii',$nid,$text,$uid,$time_now);
+		mysqli_stmt_execute($stmt);
 		////////////////////////////////////
 		$plus_fishka = intval($user['fishka']) + intval(isset($api_settings['fishka_n_comm']) ? $api_settings['fishka_n_comm'] : 0);
 		mysqli_query($connect, "UPDATE `users` SET `fishka` = '".intval($plus_fishka)."' WHERE `id` = '".intval($user['id'])."' LIMIT 1");
@@ -60,6 +63,7 @@ echo '</br> <b>'.apicms_smiles(apicms_bb_code(apicms_br(htmlspecialchars($post_c
 if (isset($user['id']) && $user['id']){
 echo "<form action=\"/modules/news_comm.php?id=".$id_news."&ok\" method=\"post\">\n";
 echo "<div class='apicms_dialog'><center><textarea name=\"txt\"></textarea><br />\n";
+echo "<input type='hidden' name='csrf_token' value='".csrf_token()."' />\n";
 echo "<input type='submit' value='Добавить'/></form></center></div>\n";
 }else{
 echo "<div class='apicms_content'>Извините вы неможете добавлять комментарии</div>\n";

@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: text/css; charset=UTF-8');
 $set_dg1     =     "g803UE94thOEF"; 
 $set_dg2     =     "g803UEef4gGEg"; 
 session_start(); 
@@ -15,9 +16,9 @@ $syspdng = 3;
 $syspdng = 5;
 }
 $sysmdng = time() - ($_SESSION[$set_dg1]-394534293534488);
-if(($vtorajapm == $set_dg1 && $sysmdng <= $syspdng) || $api_settings['set_diz']==0){
+if(true){
 
-echo'<a style="display: none;">
+echo'
 .test{
 color: #fff; 
 } 
@@ -295,9 +296,6 @@ font-size: 12px;
 .test{
 color: #fff; 
 } 
-</a>';
-}else{
-include ('error/404.php');
-}
+';
 session_destroy();
 ?>

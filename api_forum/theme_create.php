@@ -13,14 +13,17 @@ $check_subforum_row = mysqli_fetch_assoc($check_subforum);
 if (isset($_GET['id']) && $check_subforum_row['cnt']==1){
 	if ($user){
 		// Handle POST before any output so header() can work
-		if (isset($_POST['save'])){
+        if (isset($_POST['save']) && isset($_POST['csrf_token']) && hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])){
 			if (isset($_POST['name']) && isset($_POST['text'])){
 				$name_len = mb_strlen($_POST['name']);
 				$text_len = mb_strlen($_POST['text']);
 				if ($name_len > 10 && $text_len > 50){
-					$my_theme_name = apicms_filter($_POST['name']);
-					$my_theme_text = apicms_filter($_POST['text']);
-					$res = mysqli_query($connect, "INSERT INTO `api_forum_theme` (name, text, id_user, time, subforum) values ('$my_theme_name', '$my_theme_text', '".intval($user['id'])."', '$time', '$subforum_id')");
+                    $my_theme_name = apicms_filter($_POST['name']);
+                    $my_theme_text = apicms_filter($_POST['text']);
+                    $stmt = mysqli_prepare($connect, "INSERT INTO `api_forum_theme` (name, text, id_user, time, subforum) values (?,?,?,?,?)");
+                    $uid=intval($user['id']); $sub=intval($subforum_id);
+                    mysqli_stmt_bind_param($stmt,'ssiii',$my_theme_name,$my_theme_text,$uid,$time,$sub);
+                    $res = mysqli_stmt_execute($stmt);
 					if ($res && mysqli_affected_rows($connect) > 0) {
 						header("Location: all_theme.php?id=$subforum_id");
 						exit();
@@ -44,6 +47,7 @@ echo "Текст обращения: мин. 50 симв.</br><textarea name='te
 echo '</div>';
 if (!empty($post_error)) echo '<div class="erors"><center>'.htmlspecialchars($post_error).'</center></div>';
 ///////////////////////////////////
+echo "<input type='hidden' name='csrf_token' value='".$_SESSION['csrf_token']."' />";
 echo "<div class='apicms_subhead'><input type='submit' name='save' value='Создать новую тему' /></div>\n";
 }else{
 echo "<div class='erors'>У вас нет прав создавать темы</div>\n";

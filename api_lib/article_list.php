@@ -21,8 +21,12 @@ if ($k_post==0)echo "<div class='erors'><center>Статей не найдено
 while ($post_lib = mysqli_fetch_assoc($qii)){
 echo '<div class="apicms_subhead"><table width="100%" ><tr><td width="10%"><center><img src="/design/styles/'.htmlspecialchars($api_design).'/lib/article.png">';
 echo "</center></td><td width='90%'>";
-if (!empty($user) && isset($user['level']) && $user['level']==1) echo ' <span style="float:right"><a href="delete_article.php?id='.$post_lib['id'].'&raz='.$lib_id.'"><img src="/design/styles/'.htmlspecialchars($api_design).'/lib/del_article.png"></a> </span>';
-echo "<a href='article.php?id=$post_lib[id]'><b>".htmlspecialchars($post_lib['name'])."</b></a></br></td></tr></table></div>";
+$user_level = isset($user['level']) ? intval($user['level']) : 0;
+$user_id = isset($user['id']) ? intval($user['id']) : 0;
+if ($user_level==1 || ($user_id && $user_id==$post_lib['id_user'])) echo ' <span style="float:right"><a href="delete_article.php?id='.$post_lib['id'].'&raz='.$lib_id.'"><img src="/design/styles/'.htmlspecialchars($api_design).'/lib/del_article.png"></a> </span>';
+echo "<a href='article.php?id=$post_lib[id]'><b>".htmlspecialchars($post_lib['name'])."</b></a>";
+if ($user_id && $user_id==$post_lib['id_user']) echo " &nbsp;<small><a href='article.php?id=$post_lib[id]&edit=1'>Редактировать</a></small>";
+echo "</br></td></tr></table></div>";
 }
 /////////////////////////////////////////
 if ($k_page > 1){

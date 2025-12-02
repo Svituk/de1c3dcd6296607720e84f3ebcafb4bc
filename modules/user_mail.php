@@ -16,12 +16,15 @@ if ($user['id']==$ank['id']){header("Location: /");exit;}
 
 mysqli_query($connect, "UPDATE `user_mail` SET `views` = '1' WHERE `id_recipient` = '".intval($user['id'])."' AND `id_sender` = '".intval($ank['id'])."'");
 
-if (isset($_POST['txt'])){
+if (isset($_POST['txt']) && csrf_check()){
 $text = apicms_filter($_POST['txt']);
 if (strlen($text)>1024)$err = '<div class="erors"><center>Очень длинное сообщение</center></div>';
 if (strlen($text)<10)$err = '<div class="erors"><center>Короткое сообщение</center></div>';
 if (!isset($err)){
-mysqli_query($connect, "INSERT INTO `user_mail` (`txt`, `id_sender`, `id_recipient`, `time`) VALUES ('$text', '".intval($user['id'])."', '".intval($ank['id'])."', '$time')");
+$stmt = mysqli_prepare($connect, "INSERT INTO `user_mail` (`txt`,`id_sender`,`id_recipient`,`time`) VALUES (?,?,?,?)");
+$sid=intval($user['id']); $rid=intval($ank['id']);
+mysqli_stmt_bind_param($stmt,'siii',$text,$sid,$rid,$time);
+mysqli_stmt_execute($stmt);
 ////////////////////////////////////
 $plus_fishka = $user['fishka'] + $api_settings['fishka_mail'];
 mysqli_query($connect, "UPDATE `users` SET `fishka` = '".intval($plus_fishka)."' WHERE `id` = '".intval($user['id'])."' LIMIT 1");
@@ -58,6 +61,7 @@ echo "</br> <b>".apicms_smiles(apicms_br(htmlspecialchars($post_mail['txt'])))."
 if ($user['id']){
 echo "<form action='/modules/user_mail.php?id=".$ank['id']."&ok' method='post'>";
 echo "<div class='apicms_dialog'><center><textarea name='txt'></textarea><br />";
+echo "<input type='hidden' name='csrf_token' value='".csrf_token()."' />";
 echo "<input type='submit' value='Добавить'/></form></center></div>";
 }else{
 echo "<div class='apicms_content'>Извините вы неможете писать  в почту</div>";

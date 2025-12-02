@@ -45,16 +45,19 @@ if ($k_post==0)echo "<div class='erors'>Комментариев к новост
 $qii=mysqli_query($connect, "SELECT * FROM `news_comm` WHERE `id_news` = '$id_news' ORDER BY id DESC LIMIT $start, ".$api_settings['on_page']);
 while ($post_comm = mysqli_fetch_assoc($qii)){
 $ank2=mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = ".intval($post_comm['id_user'])." LIMIT 1"));
+if (!$ank2) $ank2 = array('id'=>0,'login'=>'Гость');
 echo '<div class="apicms_comms"><table width="100%" ><tr><td width="20%"><center>';
 echo apicms_ava32($ank2['id']);
-echo "</center></td><td width='80%'><a href='/profile.php?id=$ank2[id]'>".$ank2['login']."</a> ";
+$profile_link = function_exists('profile_url_by_id') ? profile_url_by_id(intval($ank2['id'])) : ('/profile.php?id='.intval($ank2['id']));
+echo "</center></td><td width='80%'><a href='".$profile_link."'>".htmlspecialchars($ank2['login'])."</a> ";
 echo "<span style='float:right'> ".apicms_data($post_comm['time'])." ";
-if ($user['level']==1) echo ' | <a href="delete_n_comm.php?id='.$post_comm['id'].'">DEL</a> ';
+ $user_level = isset($user['level']) ? intval($user['level']) : 0;
+if ($user_level==1) echo ' | <a href="delete_n_comm.php?id='.$post_comm['id'].'">DEL</a> ';
 echo " </span>";
 echo '</br> <b>'.apicms_smiles(apicms_bb_code(apicms_br(htmlspecialchars($post_comm['txt'])))).'</b></td></tr></table></div>';
 }
 /////////////////////////////////////////
-if ($user['id']){
+if (isset($user['id']) && $user['id']){
 echo "<form action=\"/modules/news_comm.php?id=".$id_news."&ok\" method=\"post\">\n";
 echo "<div class='apicms_dialog'><center><textarea name=\"txt\"></textarea><br />\n";
 echo "<input type='submit' value='Добавить'/></form></center></div>\n";

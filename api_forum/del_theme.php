@@ -21,6 +21,12 @@ if (!$can_delete){
 
 // If form submitted and user allowed — perform deletion and redirect before any output
 if (isset($_POST['okdel'])){
+    if (!csrf_check()){
+        require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+        echo "<div class='erors'><center>Неверный CSRF-токен</center></div>";
+        require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+        exit();
+    }
 	$check_theme = mysqli_query($connect, "SELECT COUNT(*) as cnt FROM `api_forum_theme` WHERE `id` = '".$theme_id."'");
 	$check_theme_row = mysqli_fetch_assoc($check_theme);
 	if ($check_theme_row && $check_theme_row['cnt']==1){
@@ -38,6 +44,7 @@ if (isset($_POST['okdel'])){
 // No POST (or deletion not yet confirmed) — include head and show confirmation form
 require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
 echo "<form action='del_theme.php?id=".$theme_id."&ok' method=\"post\">\n";
+echo "<input type='hidden' name='csrf_token' value='".htmlspecialchars(csrf_token())."' />\n";
 echo "<div class='content'><center><input type='submit' name='okdel' value='Подтвердить удаление'/></form></center></div>\n";
 
 require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';

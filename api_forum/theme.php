@@ -11,7 +11,7 @@ $title = 'APICMS - '.htmlspecialchars($theme_name['name']).'';
 
 // Handle POST first so we can redirect without "headers already sent" issues
 $post_error = '';
-if (isset($user['id']) && !empty($_POST['txt'])){
+if (isset($user['id']) && !empty($_POST['txt']) && csrf_check()){
 	$raw_text = apicms_filter($_POST['txt']);
 	if (mb_strlen($raw_text, 'UTF-8') > 1024) $post_error = 'Очень длинное сообщение';
 	if (mb_strlen($raw_text, 'UTF-8') < 10) $post_error = 'Короткое сообщение';
@@ -100,6 +100,7 @@ echo '</center></div>';
 if ($is_user && $theme_name['close']==0){
 echo "<form action='/api_forum/theme.php?id=".$theme_id."&page=end&ok' method='post'>";
 echo "<div class='apicms_dialog'><center><textarea name='txt'></textarea><br />";
+echo "<input type='hidden' name='csrf_token' value='".htmlspecialchars(csrf_token())."' />";
 echo "<input type='submit' value='Добавить'/></form></center></div>";
 }else{
 echo "<div class='erors'>Извините, вы не можете отправить сообщение</div>";

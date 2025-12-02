@@ -10,7 +10,7 @@ if (isset($_GET['user']) && $user && $check_user_row['cnt']==1){
 $ank = intval($_GET['user']);
 $theme_id = intval($_GET['id']);
 $subuser = mysqli_fetch_array(mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = '$ank' LIMIT 1"));
-if (isset($_POST['txt'])){
+if (isset($_POST['txt']) && csrf_check()){
 $text = apicms_filter($_POST['txt']);
 if (strlen($text)>1024)$err = '<div class="content"><center>Очень длинное сообщение</center></div>';
 if (strlen($text)<3)$err = '<div class="content"><center>Короткое сообщение</center></div>';
@@ -25,7 +25,8 @@ apicms_error($err);
 }
 echo "<form action='reply.php?id=".$theme_id."&user=".$subuser['id']."&ok' method=\"post\">\n";
 echo "<div class='apicms_dialog'><center><textarea name='txt'>".htmlspecialchars($subuser['login']).", </textarea><br />\n";
-echo "<input type='submit' value='Ответить'/></form></center></div>\n";
+echo "<input type='hidden' name='csrf_token' value='".htmlspecialchars(csrf_token())."' />\n";
+echo "<input type='submit' value='Ответить'/></form></center></div\n";
 ////////////////////////////////////////
 }else{
 echo "<div class='erors'>Ошибка выбора адресатов</div>\n";

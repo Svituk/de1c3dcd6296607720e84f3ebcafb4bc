@@ -13,7 +13,7 @@ $check_subforum_row = mysqli_fetch_assoc($check_subforum);
 if (isset($_GET['id']) && $check_subforum_row['cnt']==1){
 	if ($user){
 		// Handle POST before any output so header() can work
-        if (isset($_POST['save']) && isset($_POST['csrf_token']) && hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])){
+		if (isset($_POST['save']) && csrf_check()){
 			if (isset($_POST['name']) && isset($_POST['text'])){
 				$name_len = mb_strlen($_POST['name']);
 				$text_len = mb_strlen($_POST['text']);
@@ -47,7 +47,7 @@ echo "Текст обращения: мин. 50 симв.</br><textarea name='te
 echo '</div>';
 if (!empty($post_error)) echo '<div class="erors"><center>'.htmlspecialchars($post_error).'</center></div>';
 ///////////////////////////////////
-echo "<input type='hidden' name='csrf_token' value='".$_SESSION['csrf_token']."' />";
+echo "<input type='hidden' name='csrf_token' value='".htmlspecialchars(csrf_token())."' />";
 echo "<div class='apicms_subhead'><input type='submit' name='save' value='Создать новую тему' /></div>\n";
 }else{
 echo "<div class='erors'>У вас нет прав создавать темы</div>\n";

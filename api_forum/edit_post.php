@@ -14,7 +14,7 @@ $owner_id = $subuser && isset($subuser['id_user']) ? intval($subuser['id_user'])
 $can_edit = ($is_user && $user_id == $owner_id) || ($user_level==1 || $user_level==2);
 if ($postes && $can_edit && $check_post_row && $check_post_row['cnt']==1){
 /////////////////////////////////////////
-if (isset($_POST['txt']) && isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['csrf_token']){
+if (isset($_POST['txt']) && csrf_check()){
 $text = apicms_filter($_POST['txt']);
 if (strlen($text)>1024)$err = '<div class="content"><center>Очень длинное сообщение</center></div>';
 if (strlen($text)<3)$err = '<div class="content"><center>Короткое сообщение</center></div>';
@@ -33,12 +33,12 @@ apicms_error($err);
 require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
 echo "<form action='edit_post.php?id=".$theme_id."&post=".$postes."&ok' method=\"post\">\n";
 echo "<div class='apicms_dialog'><center><textarea name='txt'>".htmlspecialchars($subuser['text'])."</textarea><br />\n";
-echo "<input type='hidden' name='csrf_token' value='".$_SESSION['csrf_token']."' />\n";
+echo "<input type='hidden' name='csrf_token' value='".htmlspecialchars(csrf_token())."' />\n";
 echo "<input type='submit' value='Изменить сообщение'/></form></center></div>\n";
 ////////////////////////////////////////
 }else{
 require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
-echo "<div class='erors'>Ошибка редактирования</div\n";
+echo "<div class='erors'>Ошибка редактирования</div>\n";
 }
 require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
 ?>

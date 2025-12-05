@@ -16,23 +16,23 @@ if ($check_cat_row && $check_cat_row['cnt']==1){
             header("Location: index.php");
             exit;
         } else {
-            require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+            require_once '../design/styles/'.display_html($api_design).'/head.php';
             echo "<div class='erors'><center>Неверный CSRF-токен</center></div>\n";
-            require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+            require_once '../design/styles/'.display_html($api_design).'/footer.php';
             exit;
         }
     } else {
-        require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+        require_once '../design/styles/'.display_html($api_design).'/head.php';
         echo "<div class='apicms_subhead'><center>Подтвердите удаление раздела</center></div>";
         echo "<form method='post' action='?id=".$raz_id."'>";
-        echo "<input type='hidden' name='csrf_token' value='".htmlspecialchars(csrf_token())."' />";
+        echo "<input type='hidden' name='csrf_token' value='".display_html(csrf_token())."' />";
         echo "<div class='apicms_subhead'><center><input type='submit' value='Удалить' /></center></div>";
         echo "</form>";
-        require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+        require_once '../design/styles/'.display_html($api_design).'/footer.php';
         exit;
     }
 }
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 echo "<div class='erors'>Ошибка удаления раздела</div>\n";
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

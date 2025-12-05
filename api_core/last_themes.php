@@ -19,9 +19,9 @@ $counts_last_row = mysqli_fetch_assoc($counts_last_result);
 if ($counts_last==0)$counts_last = '';
 else
 $counts_last = '<sup><font color=#FF0000>+'.$counts_last.'</font></sup>';
-echo '<small><a class="apicms_menu_s" href="/api_forum/theme.php?id='.$themes['id'].'"> <img src="/design/styles/'.htmlspecialchars($api_design).'/forum/m_theme.png" alt=" - "> ';
+echo '<small><a class="apicms_menu_s" href="/api_forum/theme.php?id='.$themes['id'].'"> <img src="/design/styles/'.display_html($api_design).'/forum/m_theme.png" alt=" - "> ';
 	// Properly nest tags: <a><strong>...</strong></a>
-	echo ' '.htmlspecialchars($themes['name']).' <b><span style="float:right"> '.$counts.''.$counts_last.'</span></b></a></small>';
+	echo ' '.display_html($themes['name']).' <b><span style="float:right"> '.$counts.''.$counts_last.'</span></b></a></small>';
 }
 ////////////////////////////////////////
 ?>

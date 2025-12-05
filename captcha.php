@@ -4,8 +4,6 @@ $code = str_pad((string)mt_rand(0, 999), 3, '0', STR_PAD_LEFT);
 $_SESSION['captcha'] = $code;
 header('Content-Type: image/png');
 header('Cache-Control: no-cache, no-store, must-revalidate');
-header('Pragma: no-cache');
-header('Expires: 0');
 $w = 50; $h = 27;
 $im = imagecreatetruecolor($w, $h);
 $bg = imagecolorallocate($im, 240, 240, 240);

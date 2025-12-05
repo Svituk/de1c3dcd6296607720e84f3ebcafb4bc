@@ -33,7 +33,7 @@ if (isset($user['id']) && isset($_POST['txt']) && trim($_POST['txt']) !== '' && 
 	}
 }
 
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 /////////////////////////////////////////
 
 /////////////////////////////////////////
@@ -52,12 +52,12 @@ if (!$ank2) $ank2 = array('id'=>0,'login'=>'Гость');
 echo '<div class="apicms_comms"><table width="100%" ><tr><td width="20%"><center>';
 echo apicms_ava32($ank2['id']);
 $profile_link = function_exists('profile_url_by_id') ? profile_url_by_id(intval($ank2['id'])) : ('/profile.php?id='.intval($ank2['id']));
-echo "</center></td><td width='80%'><a href='".$profile_link."'>".htmlspecialchars($ank2['login'])."</a> ";
+echo "</center></td><td width='80%'><a href='".$profile_link."'>".display_html($ank2['login'])."</a> ";
 echo "<span style='float:right'> ".apicms_data($post_comm['time'])." ";
- $user_level = isset($user['level']) ? intval($user['level']) : 0;
-if ($user_level==1) echo ' | <a href="delete_n_comm.php?id='.$post_comm['id'].'">DEL</a> ';
+$user_level = isset($user['level']) ? intval($user['level']) : 0;
+if ($user_level==1) echo ' | <a href="delete_n_comm.php?id='.$post_comm['id'].'&news='.$id_news.'">DEL</a> ';
 echo " </span>";
-echo '</br> <b>'.apicms_smiles(apicms_bb_code(apicms_br(htmlspecialchars($post_comm['txt'])))).'</b></td></tr></table></div>';
+echo '</br> <b>'.apicms_smiles(apicms_bb_code(apicms_br(display_html($post_comm['txt'])))).'</b></td></tr></table></div>';
 }
 /////////////////////////////////////////
 if (isset($user['id']) && $user['id']){
@@ -74,5 +74,5 @@ echo '<div class="apicms_subhead"><center>';
 str('?id='.$id_news.'&',$k_page,$page); // генерируем постраничную навигацию
 echo '</center></div>';
 }
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

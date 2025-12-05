@@ -6,7 +6,7 @@ $title = 'Добавление новости';
 require_once '../api_core/apicms_system.php';
 // Start output buffering so header() calls later won't fail if output started
 if (!function_exists('apicms_ob_started')){ ob_start(); function apicms_ob_started(){} }
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 ///////////////////////////////
 if ($user['level'] != 1) header('location: ../');
 ///////////////////////////////
@@ -25,8 +25,8 @@ if ($k_post==0)echo "<div class='apicms_content'><center>Новостей сай
 $query = mysqli_query($connect, "SELECT * FROM `news` ORDER BY time DESC LIMIT $start, ".$api_settings['on_page']);
 while ($newsone = mysqli_fetch_assoc($query)){			
 echo '<div class="apicms_content">';
-if ($user['level']==1)echo ' <a href="delete_news.php?id='.$newsone['id'].'"><img src="/design/styles/'.htmlspecialchars($api_design).'/images/delete_us.png" alt="DEL"></a> ';
-echo ' <b>'.htmlspecialchars($newsone['name']).'</b> <small>'.apicms_data($newsone['time']).' </br> '.apicms_smiles(htmlspecialchars($newsone['txt'])).'</small> </div>';
+if ($user['level']==1)echo ' <a href="delete_news.php?id='.$newsone['id'].'"><img src="/design/styles/'.display_html($api_design).'/images/delete_us.png" alt="DEL"></a> ';
+echo ' <b>'.display_html($newsone['name']).'</b> <small>'.apicms_data($newsone['time']).' </br> '.apicms_smiles(apicms_bb_code(apicms_br(display_html($newsone['txt'])))).'</small> </div>';
 }
 /////////////////////////////////////////
 if ($k_page > 1){
@@ -51,31 +51,39 @@ echo '<div class="apicms_content"><form action="?act=do" method="post">
 Рассылка на email </br> <select name="rassilka">
 <option value="1">Да,разослать юзерам</option>
 <option value="0">Нет,только добавить</option></select><br />
+<input type="hidden" name="csrf_token" value="'.display_html(csrf_token()).'" />
 <input type="submit" value="Добавить"/></form></div>';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 break;
 ///////////////////////////////	
 case 'do':
+$csrf_ok = csrf_check();
 $name_news = apicms_filter($_POST['name']);
 $txt_news = apicms_filter($_POST['txt']);
+# проверяем CSRF
+if (!$csrf_ok){
+echo '<div class="erors"><center>Неверный CSRF-токен</center></div>';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
+break;
+}
 # проверяем, введено ли название
 if (empty($_POST['name'])) {
 echo '<div class="apicms_content">Вы не ввели название!<br /></div>';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 break;
 }
 ///////////////////////////////
 # проверяем длину названия
 if (strlen($name_news) < 3 or strlen($name_news) > 200) {
 echo '<div class="apicms_content">Неверная длинна названия!<br /></div>';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 break;
 }
 ///////////////////////////////
 # проверяем длину текста
 if (strlen($txt_news) < 30 or strlen($txt_news) > 1500) {
 echo '<div class="apicms_content">Неверная длинна текста!<br /></div>';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 break;
 }
 ///////////////////////////////
@@ -83,9 +91,9 @@ mysqli_query($connect, "INSERT INTO `news` SET `name` = '$name_news', `txt` = '$
 ///////////////////////////////
 echo '<div class="apicms_content">Вы успешно добавили новость</div>';
 header('location: add_news.php');
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 
-if ($_POST['rassilka']==1){
+if (isset($_POST['rassilka']) && $_POST['rassilka']==1){
 //Отправка на E-Mail
 $email_from = !empty($api_settings['adm_mail']) ? $api_settings['adm_mail'] : ('no-reply@'.$set['site']);
 $email_result = mysqli_query($connect, "SELECT * FROM `users` LIMIT 1");

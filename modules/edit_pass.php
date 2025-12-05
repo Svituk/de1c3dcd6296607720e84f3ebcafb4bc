@@ -4,7 +4,7 @@
 $title = 'Изменение пароля';
 require_once '../api_core/apicms_system.php';
 if (!isset($user['id']) || !$user['id']) { header('Location: /'); exit; }
-if (isset($_POST['save'])){
+if (isset($_POST['save']) && csrf_check()){
     global $connect;
     $cur = isset($_POST['pass']) ? $_POST['pass'] : '';
     $p1 = isset($_POST['pass1']) ? $_POST['pass1'] : '';
@@ -24,7 +24,7 @@ if (isset($_POST['save'])){
         $msg = '<div class="erors"><center>Одно из полей заполнено не верно</center></div>';
     }
 }
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 
 if (isset($msg)) echo $msg;
 /////////////////////////////////////////
@@ -36,5 +36,5 @@ echo "Подтверждение: <br /> <input type='password' name='pass2' val
 echo "<input type='hidden' name='csrf_token' value='".csrf_token()."' />";
 echo "<input type='submit' name='save' value='Изменить' /></div></form>";
 /////////////////////////////////////////
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

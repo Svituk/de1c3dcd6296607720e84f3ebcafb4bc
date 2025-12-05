@@ -30,15 +30,15 @@ apicms_error($err);
 }
 }
 /////////////////////////////////////////
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 echo "<form action='edit_post.php?id=".$theme_id."&post=".$postes."&ok' method=\"post\">\n";
-echo "<div class='apicms_dialog'><center><textarea name='txt'>".htmlspecialchars($subuser['text'])."</textarea><br />\n";
-echo "<input type='hidden' name='csrf_token' value='".htmlspecialchars(csrf_token())."' />\n";
+echo "<div class='apicms_dialog'><center><textarea name='txt'>".display_html($subuser['text'])."</textarea><br />\n";
+echo "<input type='hidden' name='csrf_token' value='".display_html(csrf_token())."' />\n";
 echo "<input type='submit' value='Изменить сообщение'/></form></center></div>\n";
 ////////////////////////////////////////
 }else{
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 echo "<div class='erors'>Ошибка редактирования</div>\n";
 }
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

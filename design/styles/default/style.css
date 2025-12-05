@@ -137,6 +137,9 @@ border-top: 1px #ffffff solid;
 border-bottom: 1px #e8e8ea solid;
 display: block;
 }
+.apicms_subhead .time-right {
+float: right;
+}
 
 .apicms_subhead:hover {  
 color: #2c5f75;
@@ -208,6 +211,12 @@ color: #fff;
 padding: 10px;
 border-top: 1px solid #437e8f;
 border-bottom: 1px solid #6da1b0;
+position: relative;
+z-index: 1;
+}
+.apicms_dialog * {
+position: relative;
+z-index: 2;
 }
 
 .loghead {
@@ -275,14 +284,14 @@ float: left;
 }
 
 img, iframe, video {
-max-width: 100%;
-vertical-align: middle;
+    max-width: 100%;
+    vertical-align: middle;
 }
 
 table {
-word-wrap: break-word;
-overflow-wrap: break-word;
-word-break: break-word;
-max-width: 100%;
-font-size: 12px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+    font-size: 12px;
 }

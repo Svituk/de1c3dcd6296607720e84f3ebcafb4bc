@@ -17,9 +17,9 @@ $ank=mysqli_fetch_array(mysqli_query($connect, "SELECT * FROM `users` WHERE `id`
 if ($user['level'] != 1) header('location: ../');
 if ($user['level'] == 1){
 /////////////////////////////////////////
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 /////////////////////////////////////////
-if (isset($_POST['save'])){
+if (isset($_POST['save']) && csrf_check()){
 /////////////////////////////////////////
 if (isset($_POST['name']) && preg_match('/[A-zА-я0-9 _\-\=\+\(\)\*\?\.,]/i', $_POST['name'])){
 $nameus = apicms_filter($_POST['name']);
@@ -69,31 +69,32 @@ echo "</select><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "Имя: </br> <input type='text' name='name' value='".htmlspecialchars($ank['name'])."'  /><br />\n";
+echo "Имя: </br> <input type='text' name='name' value='".display_html($ank['name'])."'  /><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "Никнейм: </br> <input type='text' name='login' value='".htmlspecialchars($ank['login'])."'  /><br />\n";
+echo "Никнейм: </br> <input type='text' name='login' value='".display_html($ank['login'])."'  /><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "Фамилия: </br> <input type='text' name='surname' value='".htmlspecialchars($ank['surname'])."'  /><br />\n";
+echo "Фамилия: </br> <input type='text' name='surname' value='".display_html($ank['surname'])."'  /><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "Страна: </br> <input type='text' name='country' value='".htmlspecialchars($ank['country'])."'  /><br />\n";
+echo "Страна: </br> <input type='text' name='country' value='".display_html($ank['country'])."'  /><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "Город: </br> <input type='text' name='city' value='".htmlspecialchars($ank['city'])."'  /><br />\n";
+echo "Город: </br> <input type='text' name='city' value='".display_html($ank['city'])."'  /><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "Фишек: </br> <input type='text' name='fishka' value='".htmlspecialchars($ank['fishka'])."'  /><br />\n";
+echo "Фишек: </br> <input type='text' name='fishka' value='".display_html($ank['fishka'])."'  /><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo "<div class='apicms_subhead'><center><input type='submit' name='save' value='Сохранить' /></center></div>\n";
+echo "<input type='hidden' name='csrf_token' value='".display_html(csrf_token())."' />\n";
 ////////////////////////////////////////
 }
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

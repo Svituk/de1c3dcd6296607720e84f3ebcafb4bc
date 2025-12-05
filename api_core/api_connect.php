@@ -8,9 +8,9 @@
 // define('DBNAME', 'my_database_name');
 
 define('DBHOST', 'localhost');
-define('DBUSER', 'user');
-define('DBPASS', 'pass');
-define('DBNAME', 'name');
+define('DBUSER', 'f67172td_base');
+define('DBPASS', 'svitu4ok!');
+define('DBNAME', 'f67172td_base');
 
 // Optional: You can protect this file with proper filesystem permissions so
 // that the real credentials are not world-readable on the server.

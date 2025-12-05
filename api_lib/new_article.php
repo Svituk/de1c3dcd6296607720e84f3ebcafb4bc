@@ -4,7 +4,7 @@
 ////////////////////////////////////////
 $title = 'Библиотека - Новая статья';
 require_once '../api_core/apicms_system.php';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 ////////////////////////////////////////
 global $connect;
 if ($is_user){
@@ -36,13 +36,13 @@ if (isset($_POST['save'])){
 if ($msg !== '') echo $msg;
 ////////////////////////////////////////
 echo "<form method='post' action='?ok'>\n";
-echo "<input type='hidden' name='csrf_token' value='".htmlspecialchars(csrf_token())."' />";
+echo "<input type='hidden' name='csrf_token' value='".display_html(csrf_token())."' />";
 echo "<div class='apicms_subhead'>Название статьи: </br> <input type='text' name='name' value=''  /> <br /> Текст статьи: </br> <textarea name='text'></textarea></br>";
 echo '</br><select name="cat">';
 $cats = mysqli_query($connect, "SELECT * FROM `api_lib_cat` ORDER BY `id` ASC");
 if(mysqli_num_rows($cats) > 0){
 while($cat = mysqli_fetch_assoc($cats)){
-echo '<option value="'.$cat['id'].'">'.htmlspecialchars($cat['name']).'</option>';
+echo '<option value="'.$cat['id'].'">'.display_html($cat['name']).'</option>';
 }
 }
 echo '</select></div>';
@@ -52,5 +52,5 @@ echo "<div class='apicms_subhead'><center><input type='submit' name='save' value
 echo "<div class='apicms_content'><center>Авторизуйтесь, чтобы создать статью</center></div>\n";
 }
 ////////////////////////////////////////
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

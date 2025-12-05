@@ -4,7 +4,7 @@
 /////////////////////////////////////////
 $title = 'Пользователи сайта';
 require_once '../api_core/apicms_system.php';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 /////////////////////////////////////////
 global $connect;
 $k_post_result = mysqli_query($connect, "SELECT COUNT(*) as cnt FROM `users`");
@@ -21,7 +21,7 @@ $ank=mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `users` WHERE `id`
 if ($ank['level']==1){
 echo "<div class='apicms_subhead'><table width='100%'><tr><td width='10%'> ";
 echo apicms_ava32($ank['id']);
-echo "</td><td width='90%'> <a href='/profile.php?id=".$ank['id']."'><b>".htmlspecialchars($ank['login'])."</b></a> 
+echo "</td><td width='90%'> <a href='/profile.php?id=".$ank['id']."'><b>".display_html($ank['login'])."</b></a> 
  <small>[ Администратор ]</small> 
  <small><span style='float:right'>".apicms_data($post_us['activity'])."</span></small></br>
  <small>Регистрация: ".apicms_data($post_us['regtime'])."</small>  </br>";
@@ -29,7 +29,7 @@ echo "</td></tr></table> </div>";
 }else{
 echo "<div class='apicms_subhead'><table width='100%'><tr><td width='10%'> ";
 echo apicms_ava32($ank['id']);
-echo "</td><td width='90%'> <a href='/profile.php?id=".$ank['id']."'><b>".htmlspecialchars($ank['login'])."</b></a>   
+echo "</td><td width='90%'> <a href='/profile.php?id=".$ank['id']."'><b>".display_html($ank['login'])."</b></a>   
  <small><span style='float:right'>".apicms_data($post_us['activity'])."</span></small></br>
  <small>Регистрация: ".apicms_data($post_us['regtime'])."</small>  </br>";
 echo "</td></tr></table> </div>";
@@ -41,5 +41,5 @@ echo '<div class="apicms_subhead"><center>';
 str('?',$k_page,$page); // генерируем постраничную навигацию
 echo '</center></div>';
 }
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

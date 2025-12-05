@@ -4,7 +4,7 @@
 ////////////////////////////////////////
 $title = 'Форум - Создание подфорума';
 require_once '../api_core/apicms_system.php';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 ////////////////////////////////////////
 global $connect;
 if (isset($_GET['id']))$razdel_id = intval($_GET['id']);
@@ -29,5 +29,5 @@ echo "<div class='apicms_subhead'><center><input type='submit' name='save' value
 echo "<div class='erors'><center>Недостаточно прав для входа!</center></div>\n";
 }
 ////////////////////////////////////////
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

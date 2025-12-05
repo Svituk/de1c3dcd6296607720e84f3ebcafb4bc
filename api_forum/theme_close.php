@@ -21,25 +21,25 @@ if ($theme_id && $check_theme_row['cnt']==1){
                 header('Location: theme.php?id=' . intval($theme_id));
                 exit();
             } else {
-                require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+                require_once '../design/styles/'.display_html($api_design).'/head.php';
                 echo "<div class='erors'><center>Неверный CSRF-токен</center></div>";
-                require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+                require_once '../design/styles/'.display_html($api_design).'/footer.php';
                 exit();
             }
         } else {
-            require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+            require_once '../design/styles/'.display_html($api_design).'/head.php';
             echo "<div class='apicms_subhead'><center>Подтвердите закрытие темы</center></div>";
             echo "<form method='post' action='?id=".$theme_id."'>";
-            echo "<input type='hidden' name='csrf_token' value='".htmlspecialchars(csrf_token())."' />";
+            echo "<input type='hidden' name='csrf_token' value='".display_html(csrf_token())."' />";
             echo "<div class='apicms_subhead'><center><input type='submit' value='Закрыть' /></center></div>";
             echo "</form>";
-            require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+            require_once '../design/styles/'.display_html($api_design).'/footer.php';
             exit();
         }
     }
 }
 
 // Now include head and render page if we didn't redirect
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 //////////////////////////////////////////
 ?>

@@ -4,7 +4,7 @@
 ////////////////////////////////////////
 $title = 'Тестирование системы';
 require_once '../api_core/apicms_system.php';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 ////////////////////////////////////////
 echo '<div class="apicms_subhead">';
 echo "Версия APICMS: $set[api_v] <br />\n";
@@ -46,7 +46,7 @@ echo 'Добавьте в корневой .htaccess строку <b>php_value a
 }
 ////////////////////////////////////////
 if (file_exists(H.'install/mod_rewrite_test.php')){
-if (@trim(file_get_apicms_contents("http://$_SERVER[HTTP_HOST]/install/mod_rewrite.test"))=='mod_rewrite-ok') {
+if (@trim(file_get_contents("http://".$_SERVER['HTTP_HOST']."/install/mod_rewrite.test"))=='mod_rewrite-ok') {
 echo "<span class='on'>mod_rewrite: хорошо</span><br />\n";
 }
 elseif(function_exists('apache_get_modules'))
@@ -121,5 +121,5 @@ echo "* mcrypt не доступен<br />\n";
 }
 echo '</div>';
 ///////////////////////////////////
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

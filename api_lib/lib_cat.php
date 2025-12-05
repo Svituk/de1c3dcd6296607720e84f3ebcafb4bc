@@ -4,7 +4,7 @@
 ////////////////////////////////////////
 $title = 'Библиотека - Создание раздела';
 require_once '../api_core/apicms_system.php';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 ////////////////////////////////////////
 global $connect;
 $user_level = isset($user['level']) ? intval($user['level']) : 0;
@@ -22,7 +22,7 @@ echo '<div class="apicms_content"><center>Раздел успешно созда
 }
 ////////////////////////////////////////
 echo "<form method='post' action='?ok'>\n";
-echo "<input type='hidden' name='csrf_token' value='".htmlspecialchars(csrf_token())."' />";
+echo "<input type='hidden' name='csrf_token' value='".display_html(csrf_token())."' />";
 echo "<div class='apicms_subhead'><center>Название раздела: </br> <input type='text' name='cat' value=''  /> <br /> Описание раздела </br> <textarea name='opis'></textarea></center></div>\n";
 ///////////////////////////////////
 echo "<div class='apicms_subhead'><center><input type='submit' name='save' value='Создать  раздел' /></center></div>\n";
@@ -30,5 +30,5 @@ echo "<div class='apicms_subhead'><center><input type='submit' name='save' value
 echo "<div class='apicms_content'><center>Недостаточно прав для входа!</center></div>\n";
 }
 ////////////////////////////////////////
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

@@ -38,16 +38,16 @@ if (isset($_GET['id']) && $check_subforum_row['cnt']==1){
 			}
 		}
 		// Now safe to include head and continue rendering form/page
-		require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+		require_once '../design/styles/'.display_html($api_design).'/head.php';
 ////////////////////////////////////////
 echo "<form method='post' action='?ok&id=$subforum_id'>\n";
 echo '<div class="apicms_dialog">';
 echo "Название темы:  мин. 10 симв.</br> <input type='text' name='name' value=''  /><br />\n";
 echo "Текст обращения: мин. 50 симв.</br><textarea name='text'></textarea><br />\n";
 echo '</div>';
-if (!empty($post_error)) echo '<div class="erors"><center>'.htmlspecialchars($post_error).'</center></div>';
+if (!empty($post_error)) echo '<div class="erors"><center>'.display_html($post_error).'</center></div>';
 ///////////////////////////////////
-echo "<input type='hidden' name='csrf_token' value='".htmlspecialchars(csrf_token())."' />";
+echo "<input type='hidden' name='csrf_token' value='".display_html(csrf_token())."' />";
 echo "<div class='apicms_subhead'><input type='submit' name='save' value='Создать новую тему' /></div>\n";
 }else{
 echo "<div class='erors'>У вас нет прав создавать темы</div>\n";
@@ -56,5 +56,5 @@ echo "<div class='erors'>У вас нет прав создавать темы</
 echo "<div class='erors'>Ошибка раздела</div>\n";
 }
 ////////////////////////////////////////
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

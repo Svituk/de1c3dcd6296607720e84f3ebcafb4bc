@@ -4,7 +4,7 @@
 /////////////////////////////////////////
 $title = 'Форум - Подфорум - Темы';
 require_once '../api_core/apicms_system.php';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 /////////////////////////////////////////
 global $connect;
 if (isset($_GET['id']))$subforum_id = intval($_GET['id']);
@@ -28,9 +28,9 @@ $counts_row = mysqli_fetch_assoc($counts_result);
 $counts = $counts_row['cnt'];
 $who_theme = mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = ".intval($post_all_theme['id_user'])." LIMIT 1"));
 echo '<div class="apicms_subhead"><table width="100%" ><tr><td width="10%"><center>';
-if ($post_all_theme['close']==0)echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/forum/theme.png">';
-if ($post_all_theme['close']==1)echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/forum/locked_theme.png">';
-echo "</center></td><td width='90%'><a href='theme.php?id=$post_all_theme[id]'><b>".htmlspecialchars($post_all_theme['name'])."</b></a> </br> Автор темы: <a href='profile.php?id=".$who_theme['id']."'>".$who_theme['login']."</a>";
+if ($post_all_theme['close']==0)echo '<img src="/design/styles/'.display_html($api_design).'/forum/theme.png">';
+if ($post_all_theme['close']==1)echo '<img src="/design/styles/'.display_html($api_design).'/forum/locked_theme.png">';
+echo "</center></td><td width='90%'><a href='theme.php?id=$post_all_theme[id]'><b>".display_html($post_all_theme['name'])."</b></a> </br> Автор темы: <a href='profile.php?id=".$who_theme['id']."'>".$who_theme['login']."</a>";
 echo "<span style='float:right'><small> ".apicms_data($post_all_theme['time'])." </span> </br> <span style='float:right'> Ответов: ".$counts." </small></span></td></tr></table></div>";
 }
 /////////////////////////////////////////
@@ -45,5 +45,5 @@ if ($user)echo "<div class='apicms_subhead'> - <a href='theme_create.php?id=$sub
 echo '<div class="erors">Ошибка доступа</div>';
 }
 /////////////////////////////////////////
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

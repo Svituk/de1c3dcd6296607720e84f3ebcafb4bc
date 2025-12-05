@@ -2,7 +2,10 @@
 
 $title = 'Ошибка 404';
 require_once '../api_core/apicms_system.php';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+http_response_code(404);
+header('X-Robots-Tag: noindex, nofollow');
+header('Content-Type: text/html; charset=UTF-8');
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 ////////////////////////////////////////
 echo '<div class="apicms_subhead">Сервер не может найти запрашиваемую страницу. 
 Например, серверы часто возвращают этот код, если запрашивается несуществующая страница.
@@ -11,5 +14,5 @@ echo '<div class="apicms_subhead">Сервер не может найти зап
 (Его нужно размещать в домене верхнего уровня под именем robots.txt.)
 Если этот статус указан для URL, которые робот Googlebot пытался просканировать, скорее всего, он перешел по недействительной ссылке с другой страницы (например, если ссылка устарела или содержит опечатку).</div>';
 ////////////////////////////////////////
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

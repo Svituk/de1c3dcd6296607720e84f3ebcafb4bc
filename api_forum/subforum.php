@@ -4,7 +4,7 @@
 /////////////////////////////////////////
 $title = 'Форум - Подфорум';
 require_once '../api_core/apicms_system.php';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 /////////////////////////////////////////
  $user_level = isset($user['level']) ? intval($user['level']) : 0;
 if (isset($_GET['id']))$razdel_id = intval($_GET['id']);
@@ -23,12 +23,12 @@ while ($post_subforum = mysqli_fetch_assoc($qii)){
 $counts_result = mysqli_query($connect, "SELECT COUNT(*) as cnt FROM `api_forum_theme` WHERE `subforum` = '".intval($post_subforum['id'])."'");
 $counts_row = mysqli_fetch_assoc($counts_result);
 $counts = $counts_row['cnt'];
-echo '<div class="apicms_subhead"><table width="100%" ><tr><td width="10%"><center><img src="/design/styles/'.htmlspecialchars($api_design).'/forum/subforum.png">';
+echo '<div class="apicms_subhead"><table width="100%" ><tr><td width="10%"><center><img src="/design/styles/'.display_html($api_design).'/forum/subforum.png">';
 echo "</center></td><td width='90%'>";
-if ($user_level==1 || $user_level==2) echo ' <a href="delete_subforum.php?id='.$post_subforum['id'].'"><img src="/design/styles/'.htmlspecialchars($api_design).'/forum/del_theme.png"></a> ';
-echo "<a href='all_theme.php?id=$post_subforum[id]'><b>".htmlspecialchars($post_subforum['name'])."</b></a> ";
+if ($user_level==1 || $user_level==2) echo ' <a href="delete_subforum.php?id='.$post_subforum['id'].'"><img src="/design/styles/'.display_html($api_design).'/forum/del_theme.png"></a> ';
+echo "<a href='all_theme.php?id=$post_subforum[id]'><b>".display_html($post_subforum['name'])."</b></a> ";
 echo "<span style='float:right'><small> ".apicms_data($post_subforum['time'])." </span> </br>";
-if ($post_subforum['opisanie']!=NULL)echo ''.htmlspecialchars($post_subforum['opisanie']).'';
+if ($post_subforum['opisanie']!=NULL)echo ''.display_html($post_subforum['opisanie']).'';
 echo "<span style='float:right'> Всего: ".$counts." </small></span></br></td></tr></table></div>";
 }
 /////////////////////////////////////////
@@ -40,5 +40,5 @@ echo '</center></div>';
 /////////////////////////////////////////
 if ($user_level==1 || $user_level==2)echo "<div class='apicms_subhead'> - <a href='subforum_create.php?id=$razdel_id'>Создать новый подфорум</a></div>";
 /////////////////////////////////////////
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

@@ -3,11 +3,9 @@
 
 $title = 'Ошибка 304';
 require_once '../api_core/apicms_system.php';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
-////////////////////////////////////////
-echo '<div class="apicms_subhead">Запрошенная страница не была изменена с момента последнего запроса. С этим ответом сервер не возвращает содержимое страницы.
-Советуем настроить сервер на возвращение этого ответа (называемого НТТР-заголовком "If-Modified-Since"), если страница не изменялась с момента последнего запроса отправителя. 
-Это позволяет сэкономить ваш трафик и сократить издержки, так как ваш сервер лишь сообщает роботу Googlebot, что страница не изменялась после предыдущего сканирования.</div>';
-////////////////////////////////////////
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+ // Correct 304: no body should be sent
+ http_response_code(304);
+ header('X-Robots-Tag: noindex, nofollow');
+ header('Content-Type: text/html; charset=UTF-8');
+ exit;
 ?>

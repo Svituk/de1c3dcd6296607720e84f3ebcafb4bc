@@ -21,9 +21,9 @@ if (!$can_edit){
 // Handle POST (save) before output so header redirect works
 if (isset($_POST['save'])){
 	if (!csrf_check()){
-		require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+		require_once '../design/styles/'.display_html($api_design).'/head.php';
 		echo "<div class='erors'><center>Неверный CSRF-токен</center></div>";
-		require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+		require_once '../design/styles/'.display_html($api_design).'/footer.php';
 		exit();
 	}
 	$nameus = apicms_filter($_POST['name']);
@@ -34,19 +34,19 @@ if (isset($_POST['save'])){
 }
 
 // No redirect — include head and show form
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 
 echo "<form method='post' action='?id=".$theme_id."&ok'>";
 echo '<div class="apicms_subhead">';
-echo "Название темы: </br> <input type='text' name='name' value='".htmlentities($setthem['name'], ENT_QUOTES, 'UTF-8')."' style='width:95%;' /><br />";
+echo "Название темы: </br> <input type='text' name='name' value='".display_html($setthem['name'])."' style='width:95%;' /><br />";
 echo '</div>';
 
 echo "<div class='apicms_subhead">";
-echo 'Сообщение темы:</br><textarea name="text" cols="17" rows="3" style="width:95%;" >'.htmlspecialchars($setthem['text']).'</textarea><br />';
+echo 'Сообщение темы:</br><textarea name="text" cols="17" rows="3" style="width:95%;" >'.display_html($setthem['text']).'</textarea><br />';
 echo '</div>';
-echo "<input type='hidden' name='csrf_token' value='".htmlspecialchars(csrf_token())."' />";
+echo "<input type='hidden' name='csrf_token' value='".display_html(csrf_token())."' />";
 echo "<div class='apicms_subhead'><center><input type='submit' name='save' value='Обновить информацию' style='width:95%;' /></center></div>";
 
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 
 ?>

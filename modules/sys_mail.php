@@ -4,7 +4,7 @@
 /////////////////////////////////////////
 $title = 'Системные оповещения';
 require_once '../api_core/apicms_system.php';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 /////////////////////////////////////////
 
 global $connect;
@@ -22,14 +22,14 @@ if ($k_post==0)echo "<div class='erors'>Оповещений не найдено
 $qii=mysqli_query($connect, "SELECT * FROM `api_system` WHERE `id_user` = '".intval($user['id'])."' ORDER BY time DESC LIMIT $start, ".$api_settings['on_page']);
 while ($post_mail = mysqli_fetch_assoc($qii)){
 echo '<div class="apicms_comms">Система <span style="float:right"> '.apicms_data($post_mail['time']).' </span></br> 
-<b>'.apicms_smiles(apicms_br(htmlspecialchars($post_mail['text']))).'</b></div>';
+<b>'.apicms_smiles(apicms_br(display_html($post_mail['text']))).'</b></div>';
 }
 
 if ($k_page > 1){
 echo '<div class="apicms_subhead"><center>';
-str('/modules/sys_mail.php?id='.$ank['id'].'&',$k_page,$page); // генерируем постраничную навигацию
+str('/modules/sys_mail.php?',$k_page,$page); // генерируем постраничную навигацию
 echo '</center></div>';
 }
 
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

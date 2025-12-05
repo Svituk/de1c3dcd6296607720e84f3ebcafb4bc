@@ -1,1 +1,1 @@
-AddType application/x-httpd-php .css
+AddType text/css .css

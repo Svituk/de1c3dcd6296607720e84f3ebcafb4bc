@@ -21,7 +21,7 @@ if ($can_create && isset($_POST['save'])){
 }
 
 // Include head and show form / message
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 
 if ($can_create){
 	echo "<form method='post' action='?ok'>\n";
@@ -32,6 +32,6 @@ if ($can_create){
 }
 
 ////////////////////////////////////////
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 
 ?>

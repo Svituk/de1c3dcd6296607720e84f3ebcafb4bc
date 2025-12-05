@@ -29,9 +29,9 @@ if (!isset($_GET['username'])){
     $ank=mysqli_fetch_array(mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = '".intval($ank['id'])."' LIMIT 1"));
 }
 ///////////////////////////////////
-$login_safe = isset($ank['login']) ? htmlspecialchars($ank['login']) : '';
+$login_safe = isset($ank['login']) ? display_html($ank['login']) : '';
 $title = ''.$login_safe.' - Личная страница / '.status($ank['id']).'';
-require_once 'design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once 'design/styles/'.display_html($api_design).'/head.php';
 ///////////////////////////////////
 echo '<div class="apicms_content">';
 if ($ank['block_time']>=$time){
@@ -61,19 +61,19 @@ echo '<div id="ava-modal"><a class="ava-close" href="#">×</a><img src="'.$ava_p
 echo '</div>';
 ////////////////////////////////////////
 echo '<div class="apicms_subhead">';
-if (isset($ank['level']) && $ank['level']==1)echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/cadmin.png" alt=""> Должность: Администратор сайта</br>';
+if (isset($ank['level']) && $ank['level']==1)echo '<img src="/design/styles/'.display_html($api_design).'/profile/cadmin.png" alt=""> Должность: Администратор сайта</br>';
 if (isset($ank['level']) && $ank['level']==2)echo '<img src="/design/profile/cmoder.png" alt=""> Должность: Модератор сайта</br>';
-echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/calendar.png" alt=""> Дата регистрации: '.apicms_data($ank['regtime']).'</br>';
-echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/vhod.png" alt=""> Последнее посещение: '.apicms_data($ank['last_aut']).'</br>';
-echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/activity.png" alt=""> Последняя активность: '.apicms_data($ank['activity']).'</br>';
-$my_place_safe = isset($ank['my_place']) ? htmlspecialchars($ank['my_place']) : '';
-echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/razdel.png" alt=""> Последний раздел: '.$my_place_safe;
+echo '<img src="/design/styles/'.display_html($api_design).'/profile/calendar.png" alt=""> Дата регистрации: '.apicms_data($ank['regtime']).'</br>';
+echo '<img src="/design/styles/'.display_html($api_design).'/profile/vhod.png" alt=""> Последнее посещение: '.apicms_data($ank['last_aut']).'</br>';
+echo '<img src="/design/styles/'.display_html($api_design).'/profile/activity.png" alt=""> Последняя активность: '.apicms_data($ank['activity']).'</br>';
+$my_place_safe = isset($ank['my_place']) ? display_html($ank['my_place']) : '';
+echo '<img src="/design/styles/'.display_html($api_design).'/profile/razdel.png" alt=""> Последний раздел: '.$my_place_safe;
 echo '</div>';
 ////////////////////////////////////////
 echo '<div class="apicms_subhead">';
-if ($ank['block_count']>0)echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/user_ban.png" alt=""> Нарушений на сайте: '.$ank['block_count'].' </br> ';
-echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/mail.png" alt=""> E-mail: '.(isset($ank['email']) ? htmlspecialchars($ank['email']) : '').'</br>';
-echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/fishka.png" alt=""> Фишек сайта : '.(isset($ank['fishka']) ? htmlspecialchars($ank['fishka']) : '0').'</br>';
+if ($ank['block_count']>0)echo '<img src="/design/styles/'.display_html($api_design).'/profile/user_ban.png" alt=""> Нарушений на сайте: '.$ank['block_count'].' </br> ';
+echo '<img src="/design/styles/'.display_html($api_design).'/profile/mail.png" alt=""> E-mail: '.(isset($ank['email']) ? display_html($ank['email']) : '').'</br>';
+echo '<img src="/design/styles/'.display_html($api_design).'/profile/fishka.png" alt=""> Фишек сайта : '.(isset($ank['fishka']) ? display_html($ank['fishka']) : '0').'</br>';
 
 if ($ank['rating']==0)$userraiting = 'нулевой';
 else $userraiting = $ank['rating'];
@@ -82,30 +82,30 @@ if ($ank['sex']==1)$userpol = 'Мужчина';
 elseif ($ank['sex']==0)$userpol = 'Женщина';
 else $userpol = 'Не определено';
 
-echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/raiting.png" alt=""> Рейтинг : '.$userraiting.'</br>';
-echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/nick.png" alt=""> Псевдоним: '.(isset($ank['login']) ? htmlspecialchars($ank['login']) : '').' / '.$userpol.'</br>';
-echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/style.png" alt=""> Используемый стиль: '.(isset($ank['style']) ? htmlspecialchars($ank['style']) : '').'</br>';
-if ($ank['name']!=NULL)echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/name.png" alt=""> Имя: '.htmlspecialchars($ank['name']).'</br>';
-if ($ank['surname']!=NULL)echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/name.png" alt=""> Фамилия: '.htmlspecialchars($ank['surname']).'</br>';
-if ($ank['country']!=NULL)echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/country.png" alt=""> Страна: '.htmlspecialchars($ank['country']).'</br>';
-if ($ank['city']!=NULL)echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/city.png" alt=""> Город: '.htmlspecialchars($ank['city']).'</br>';
+echo '<img src="/design/styles/'.display_html($api_design).'/profile/raiting.png" alt=""> Рейтинг : '.$userraiting.'</br>';
+echo '<img src="/design/styles/'.display_html($api_design).'/profile/nick.png" alt=""> Псевдоним: '.(isset($ank['login']) ? display_html($ank['login']) : '').' / '.$userpol.'</br>';
+echo '<img src="/design/styles/'.display_html($api_design).'/profile/style.png" alt=""> Используемый стиль: '.(isset($ank['style']) ? display_html($ank['style']) : '').'</br>';
+if ($ank['name']!=NULL)echo '<img src="/design/styles/'.display_html($api_design).'/profile/name.png" alt=""> Имя: '.display_html($ank['name']).'</br>';
+if ($ank['surname']!=NULL)echo '<img src="/design/styles/'.display_html($api_design).'/profile/name.png" alt=""> Фамилия: '.display_html($ank['surname']).'</br>';
+if ($ank['country']!=NULL)echo '<img src="/design/styles/'.display_html($api_design).'/profile/country.png" alt=""> Страна: '.display_html($ank['country']).'</br>';
+if ($ank['city']!=NULL)echo '<img src="/design/styles/'.display_html($api_design).'/profile/city.png" alt=""> Город: '.display_html($ank['city']).'</br>';
 echo '</div>';
 ///////////////////////////////////
 if ($user_level>=1){
 echo '<div class="apicms_subhead">';
-echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/ip.png" alt=""> IP: <a href="/admin/get_ip.php?ip='.$ank['ip'].'">'.$ank['ip'].'</a></br>';
-echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/oc.png" alt=""> OC: '.(isset($ank['oc']) ? htmlspecialchars($ank['oc']) : '').'</br>';
-echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/brouse.png" alt=""> Браузер: '.(isset($ank['browser']) ? htmlspecialchars($ank['browser']) : '').'</br>';
-if ($user_level>=1 && isset($user['id']) && $user['id']!=$ank['id'])echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/block.png" alt="">  <a href="/admin/user_block.php?id='.$ank['id'].'">Блокировать профиль</a></br>';
-if ($user_level==1)echo '<img src="/design/styles/'.htmlspecialchars($api_design).'/profile/edit.png" alt="">  <a href="/admin/edit_user.php?id='.$ank['id'].'">Редактировать профиль</a></br>';
+echo '<img src="/design/styles/'.display_html($api_design).'/profile/ip.png" alt=""> IP: <a href="/admin/get_ip.php?ip='.rawurlencode($ank['ip']).'">'.display_html($ank['ip']).'</a></br>';
+echo '<img src="/design/styles/'.display_html($api_design).'/profile/oc.png" alt=""> OC: '.(isset($ank['oc']) ? display_html($ank['oc']) : '').'</br>';
+echo '<img src="/design/styles/'.display_html($api_design).'/profile/brouse.png" alt=""> Браузер: '.(isset($ank['browser']) ? display_html($ank['browser']) : '').'</br>';
+if ($user_level>=1 && isset($user['id']) && $user['id']!=$ank['id'])echo '<img src="/design/styles/'.display_html($api_design).'/profile/block.png" alt="">  <a href="/admin/user_block.php?id='.$ank['id'].'">Блокировать профиль</a></br>';
+if ($user_level==1)echo '<img src="/design/styles/'.display_html($api_design).'/profile/edit.png" alt="">  <a href="/admin/edit_user.php?id='.$ank['id'].'">Редактировать профиль</a></br>';
 echo '</div>';
 }
-if (isset($user['id']) && $user['id']!=$ank['id'])echo '<div class="apicms_subhead"><img src="/design/styles/'.htmlspecialchars($api_design).'/profile/e_mail.png" alt="">  <a href="/modules/user_mail.php?id='.$ank['id'].'">Написать приватно '.htmlspecialchars($ank['login']).'</a></br></div>';
+if (isset($user['id']) && $user['id']!=$ank['id'])echo '<div class="apicms_subhead"><img src="/design/styles/'.display_html($api_design).'/profile/e_mail.png" alt="">  <a href="/modules/user_mail.php?id='.$ank['id'].'">Написать приватно '.display_html($ank['login']).'</a></br></div>';
 if (isset($user['id']) && $user['id']!=$ank['id']){
     $contact_check = mysqli_query($connect, "SELECT COUNT(*) as cnt FROM `contact_list` WHERE `id_user` = '".intval($ank['id'])."' AND `my_id` = '".intval($user['id'])."' LIMIT 1");
 $contact_row = mysqli_fetch_assoc($contact_check);
-if ($contact_row['cnt']==0)echo '<div class="apicms_subhead"><img src="/design/styles/'.htmlspecialchars($api_design).'/profile/cont.png" alt="">  <a href="/modules/my_contacts.php?id='.$ank['id'].'">Добавить в контакты</a></br></div>';
+if ($contact_row['cnt']==0)echo '<div class="apicms_subhead"><img src="/design/styles/'.display_html($api_design).'/profile/cont.png" alt="">  <a href="/modules/my_contacts.php?id='.$ank['id'].'">Добавить в контакты</a></br></div>';
 }
 ///////////////////////////////////
-require_once 'design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once 'design/styles/'.display_html($api_design).'/footer.php';
 ?>

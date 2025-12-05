@@ -5,15 +5,15 @@
 $title = 'Настройки системы';
 require_once '../api_core/apicms_system.php';
 if (!function_exists('apicms_ob_started')){ ob_start(); function apicms_ob_started(){} }
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 ////////////////////////////////////////
 if ($user['level'] != 1) header('location: ../');
 if ($user['level'] == 1){
 ////////////////////////////////////////
-$my_sets = apicms_filter($_POST['set_theme']);
+$my_sets = isset($_POST['set_theme']) ? apicms_filter($_POST['set_theme']) : (isset($api_settings['style']) ? $api_settings['style'] : 'default');
 /////////////////////////////////////////
 global $connect;
-if (isset($_POST['save'])){
+if (isset($_POST['save']) && csrf_check()){
 if (isset($_POST['set_theme']) && preg_match('#^([A-z0-9\-_\(\)]+)$#ui', $_POST['set_theme']) && is_dir(H.'design/styles/'.$_POST['set_theme'])){
 mysqli_query($connect, "UPDATE `settings` SET `style` = '$my_sets' LIMIT 1");
 }
@@ -92,36 +92,36 @@ echo "Оформление для гостя <br /><select name='set_theme'>\n";
 $opendirthem=opendir(H.'design/styles');
 while ($themes_set=readdir($opendirthem)){
 if ($themes_set=='.' || $themes_set=='..' || !is_dir(H."design/styles/$themes_set"))continue;
-echo "<option value='$themes_set'>".trim(file_get_contents(H.'design/styles/'.$themes_set.'/them.name'))."</option>\n";
+echo "<option value='".$themes_set."'>".display_html(trim(@file_get_contents(H.'design/styles/'.$themes_set.'/them.name')))."</option>\n";
 }
 closedir($opendirthem);
 echo "</select><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "E-mail администратора: <br /><input type='text' name='email' value='$api_settings[adm_mail]'  /><br />\n";
+echo "E-mail администратора: <br /><input type='text' name='email' value='".display_html($api_settings['adm_mail'])."'  /><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo '<div class="apicms_menu">Настройки для SEO оптимизации сайта</div>';
 echo '<div class="apicms_subhead">';
-echo "Название сайта: <br /><input type='text' name='title' value='$api_settings[title]'  /><br />\n";
+echo "Название сайта: <br /><input type='text' name='title' value='".display_html($api_settings['title'])."'  /><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "Описание сайта: <br /><input type='text' name='Description' value='$api_settings[Description]'  /><br />\n";
+echo "Описание сайта: <br /><input type='text' name='Description' value='".display_html($api_settings['Description'])."'  /><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "Ключевые слова: <br /><input type='text' name='Keywords' value='$api_settings[Keywords]'  /><br />\n";
+echo "Ключевые слова: <br /><input type='text' name='Keywords' value='".display_html($api_settings['Keywords'])."'  /><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo '<div class="apicms_subhead">';
-echo "Срок посещения поисковых ботов (минуты): <br /><input type='text' name='revisit' value='$api_settings[revisit]'  /><br />\n";
+echo "Срок посещения поисковых ботов (минуты): <br /><input type='text' name='revisit' value='".display_html($api_settings['revisit'])."'  /><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo '<div class="apicms_menu">Настройки сайта</div>';
 echo '<div class="apicms_subhead">';
-echo "Пунктов на страницу: <br /><input type='text' name='page' value='$api_settings[on_page]'  /><br />\n";
+echo "Пунктов на страницу: <br /><input type='text' name='page' value='".display_html($api_settings['on_page'])."'  /><br />\n";
 echo '</div>';
 /////////////////////////////////////////
 echo '<div class="apicms_subhead">';
@@ -164,8 +164,9 @@ echo '<div class="apicms_subhead">';
 echo "Фишек за коммент к новости: <br /><input type='text' name='fishka_n_comm' value='$api_settings[fishka_n_comm]'  /><br />\n";
 echo '</div>';
 /////////////////////////////////////////
+echo "<input type='hidden' name='csrf_token' value='".display_html(csrf_token())."' />\n";
 echo "<div class='apicms_subhead'><center><input type='submit' name='save' value='Сохранить' /></center></div>\n";
 ////////////////////////////////////////
 }
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

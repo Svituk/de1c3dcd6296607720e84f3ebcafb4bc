@@ -4,7 +4,7 @@
 ////////////////////////////////////////
 $title = 'Загрузка аватарки';
 require_once 'api_core/apicms_system.php';
-require_once 'design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once 'design/styles/'.display_html($api_design).'/head.php';
 ////////////////////////////////////////
 # авторизовался
 if ($user['id']){
@@ -22,6 +22,7 @@ echo '</center></div>';
 $err = '';
 
     if (isset($_FILES['file']) && isset($_FILES['file']['name']) && isset($_FILES['file']['tmp_name'])){
+    if (!csrf_check()){ $err .= '<div class="erors"><center>Неверный CSRF-токен</center></div>'; }
     $upload_ok = true;
     if (!isset($_FILES['file']['error']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK){ $err .= '<div class="erors"><center>Ошибка загрузки файла</center></div>'; $upload_ok = false; }
     elseif (!is_uploaded_file($_FILES['file']['tmp_name'])){ $err .= '<div class="erors"><center>Некорректный источник файла</center></div>'; $upload_ok = false; }
@@ -60,9 +61,9 @@ if (imagesx($imgc)>800 || imagesy($imgc)>800){
 						@unlink($value);
 					}
 				}
-				imagejpeg($screen,$_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.jpg',100);
-				@chmod($_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.jpg',0777);
-				imagedestroy($screen);
+                imagejpeg($screen,$_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.jpg',100);
+                @chmod($_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.jpg',0644);
+                imagedestroy($screen);
 }else{
 move_uploaded_file($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.jpg');
 }
@@ -81,7 +82,7 @@ foreach ($avs as $value)
 }
 
 move_uploaded_file($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.gif');
-@chmod($_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.gif',0777);
+@chmod($_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.gif',0644);
 
 $err .= '<div class="erors"><center>Аватар успешно установлен</center></div>';
 }
@@ -127,9 +128,9 @@ if (imagesx($imgc)>800 || imagesy($imgc)>800)
 					}
 
 
-					imagepng($screen,$_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.png');
-					@chmod($_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.png',0777);
-					imagedestroy($screen);
+                    imagepng($screen,$_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.png');
+                    @chmod($_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.png',0644);
+                    imagedestroy($screen);
 }else{
 move_uploaded_file($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/files/ava/'.$user['id'].'.png');
 }
@@ -144,6 +145,7 @@ apicms_error($err);
 ////////////////////////////////////////
 echo '<div class="apicms_subhead"><center><div id="text"><form method="post" enctype="multipart/form-data" action="">
 <a><input type="file" name="file" accept="image/*,image/gif,image/png,image/jpeg" /></a>
+<input type="hidden" name="csrf_token" value="'.display_html(csrf_token()).'" />
 <input value="Загрузить" type="submit" /></form></div></center></div>';
 ////////////////////////////////////////
 # окончилась сессия авторизации
@@ -151,5 +153,5 @@ echo '<div class="apicms_subhead"><center><div id="text"><form method="post" enc
 echo '<div class="erors">Извините у вас нет прав для загрузки аватара</div>';
 }
 ////////////////////////////////////////
-require_once 'design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once 'design/styles/'.display_html($api_design).'/footer.php';
 ?>

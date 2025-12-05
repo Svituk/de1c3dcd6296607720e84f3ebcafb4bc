@@ -5,7 +5,7 @@
 $title = 'Блокировка пользователя';
 require_once '../api_core/apicms_system.php';
 if (!function_exists('apicms_ob_started')){ ob_start(); function apicms_ob_started(){} }
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 /////////////////////////////////////////
 if ($user['level'] < 1) header('location: ../');
 if ($user['level'] == 1 or $user['level'] == 2){
@@ -45,7 +45,7 @@ else
 echo '<div class="apicms_content"><center>У вас нет соответствующих прав</center></div>';
 }
 /////////////////////////////////////////
-if (isset($_POST['ban_pr']) && isset($_POST['time']) && isset($_POST['vremja']) && $user['level']>=1){
+if (isset($_POST['ban_pr']) && isset($_POST['time']) && isset($_POST['vremja']) && $user['level']>=1 && csrf_check()){
 $block_time = $time;
 if ($_POST['vremja']=='min')$block_time+=intval($_POST['time'])*60;
 if ($_POST['vremja']=='chas')$block_time+=intval($_POST['time'])*60*60;
@@ -68,7 +68,7 @@ if ($ban_post==0)echo "<div class='apicms_content'><center>Нарушений н
 $qii=mysqli_query($connect, "SELECT * FROM `users_ban` WHERE `ank_ban` = '".intval($ank['id'])."' ORDER BY `time` DESC");
 while ($post_ban = mysqli_fetch_assoc($qii)){
 $ank2=mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = ".intval($post_ban['ank_ban'])." LIMIT 1"));
-echo "<div class='apicms_subhead'>Причина: <b>".$post_ban['prich']."</b> </br></br> До ".apicms_data($post_ban['time'])." <a class = 'headbut' href='?id=$ank[id]&unset=$post_ban[id]'>Разблокировать</a></div>";
+echo "<div class='apicms_subhead'>Причина: <b>".display_html($post_ban['prich'])."</b> </br></br> До ".apicms_data($post_ban['time'])." <a class = 'headbut' href='?id=$ank[id]&unset=$post_ban[id]'>Разблокировать</a></div>";
 }
 /////////////////////////////////////////
 if ($user['level']>=1){
@@ -80,11 +80,11 @@ echo "<option value='min'>Минут</option>\n";
 echo "<option value='chas'>Часов</option>\n";
 echo "<option value='sut'>Суток</option>\n";
 echo "<option value='mes'>Месяцев</option>\n";
-echo "</select><br /><input type='submit' value='Заблокировать'/></form></center></div>\n";
+echo "</select><br /><input type='hidden' name='csrf_token' value='".display_html(csrf_token())."' /><input type='submit' value='Заблокировать'/></form></center></div>\n";
 }else{
 echo "<div class='apicms_content'>Нет прав для того, чтобы забанить пользователя</div>\n";
 }
 /////////////////////////////////////////
 }
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 ?>

@@ -1,0 +1,6 @@
+ .wysiwyg{width:95%}
+ .wysiwyg-toolbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+ .wysiwyg-toolbar button{padding:6px 8px;border:1px solid #ddd;background:#f7f7f7;cursor:pointer}
+ .wysiwyg-toolbar button.is-active{background:#e6f0ff;border-color:#99c}
+ .wysiwyg-toolbar input[type=color]{width:32px;height:28px;border:1px solid #ddd}
+ .wysiwyg-editor{min-height:120px;background:#fff;border:1px solid #e8e8ea;padding:8px;line-height:1.4}

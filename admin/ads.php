@@ -5,7 +5,7 @@
 $title = 'Добавление рекламы';
 require_once '../api_core/apicms_system.php';
 if (!function_exists('apicms_ob_started')){ ob_start(); function apicms_ob_started(){} }
-require_once '../design/styles/'.htmlspecialchars($api_design).'/head.php';
+require_once '../design/styles/'.display_html($api_design).'/head.php';
 ///////////////////////////////
 if ($user['level'] != 1) header('location: ../');
 ///////////////////////////////
@@ -26,8 +26,8 @@ while ($adsone = mysqli_fetch_assoc($query)){
 if ($adsone['mesto']==1)$ms = 'верх сайта';
 if ($adsone['mesto']==2)$ms = 'низ сайта';	
 echo '<div class="apicms_subhead"> '.$adsone['name'].' ';
-if ($user['level']==1)echo ' <span style="float:right"><a href="delete_ads.php?id='.$adsone['id'].'"><img src="/design/styles/'.htmlspecialchars($api_design).'/images/delete_us.png" alt="Удалить"></a></span> ';
-echo ' </br> Активна до: '.apicms_data($adsone['time']).' </br> Расположение на сайте: '.$ms.' </br> Ссылка на страницу: '.$adsone['link'].' ';
+if ($user['level']==1)echo ' <span style="float:right"><a href="delete_ads.php?id='.$adsone['id'].'"><img src="/design/styles/'.display_html($api_design).'/images/delete_us.png" alt="Удалить"></a></span> ';
+echo ' </br> Активна до: '.apicms_data($adsone['time']).' </br> Расположение на сайте: '.display_html($ms).' </br> Ссылка на страницу: '.display_html($adsone['link']).' ';
 echo '</div>';
 }
 /////////////////////////////////////////
@@ -60,11 +60,17 @@ echo "Расположение <select name='mesto'>";
 echo "<option value='1'>Вверху сайта</option>\n";
 echo "<option value='2'>Внизу сайта</option>\n";
 echo "</select></br>\n";
+echo '<input type="hidden" name="csrf_token" value="'.display_html(csrf_token()).'" />';
 echo '<input type="submit" value="Разместить"/></form></div>';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 break;
 ///////////////////////////////	
 case 'do':
+if (!csrf_check()){
+echo '<div class="erors"><center>Неверный CSRF-токен</center></div>';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
+break;
+}
 $name = apicms_filter($_POST['name']);
 $link = apicms_filter($_POST['link']);
 $day=intval($_POST['days']);
@@ -74,28 +80,28 @@ $time_last=time()+$day*60*60*24;
 # проверяем, введено ли название
 if (empty($_POST['name'])) {
 echo '<div class="apicms_content">Вы не ввели название ссылки!</div>';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 break;
 }
 ///////////////////////////////
 # проверяем длину названия
 if (strlen($name) < 3 or strlen($name) > 200) {
 echo '<div class="apicms_content">Неверная длинна названия ссылки!</div>';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 break;
 }
 ///////////////////////////////
 # проверяем длину текста
 if (strlen($link) < 5 or strlen($link) > 150) {
 echo '<div class="apicms_content">Неверная длинна ссылки!</div>';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 break;
 }
 ///////////////////////////////
 mysqli_query($connect, "INSERT INTO `advertising` SET `name` = '$name', `link` = '$link', `time` = '".intval($time_last)."', `mesto` = '$mesto', `id_user` = '".intval($user['id'])."'");
 ///////////////////////////////
 echo '<div class="apicms_content">Вы успешно добавили рекламную ссылку</div>';
-require_once '../design/styles/'.htmlspecialchars($api_design).'/footer.php';
+require_once '../design/styles/'.display_html($api_design).'/footer.php';
 break;
 }
 }

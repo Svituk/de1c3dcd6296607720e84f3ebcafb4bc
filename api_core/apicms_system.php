@@ -6,12 +6,38 @@ if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
 ini_set('session.cookie_secure', 1);
 }
 session_start();
+if (!isset($GLOBALS['APICMS_START'])){ $GLOBALS['APICMS_START'] = microtime(true); }
+if (!isset($GLOBALS['APICMS_MEM_START'])){ $GLOBALS['APICMS_MEM_START'] = memory_get_usage(false); }
+if (!defined('APICMS_DEBUG')){ define('APICMS_DEBUG', (isset($_GET['debug']) && $_GET['debug']=='1')); }
+if (APICMS_DEBUG){
+    ini_set('display_errors', true);
+    ini_set('html_errors', true);
+    error_reporting(E_ALL);
+}
 error_reporting(E_ALL ^ E_NOTICE);
-ini_set('display_errors', false);
-ini_set('html_errors', false);
+ini_set('display_errors', true);
+ini_set('html_errors', true);
 ini_set('error_reporting', E_ALL ^ E_NOTICE);
 ////////////////////////////////////////////////////////////////
 include_once 'api_connect.php';
+
+// Подключение классов безопасности
+require_once __DIR__ . '/classes/security/Escaper.php';
+require_once __DIR__ . '/classes/security/filter.php';
+require_once __DIR__ . '/classes/Di.php';
+use System\Core\Security\Escaper;
+use System\Core\Security\Filter;
+use System\Core\Di;
+
+// SQL counter and wrappers for query profiling
+if (!isset($GLOBALS['APICMS_SQL_COUNT'])){ $GLOBALS['APICMS_SQL_COUNT'] = 0; }
+function apicms_sql_inc($n=1){ $GLOBALS['APICMS_SQL_COUNT'] += max(1, intval($n)); }
+function apicms_query($connect, $sql){ apicms_sql_inc(1); return mysqli_query($connect, $sql); }
+function apicms_stmt_execute($stmt){ apicms_sql_inc(1); return mysqli_stmt_execute($stmt); }
+if (!function_exists('apicms_mark')){
+    $GLOBALS['APICMS_PROFILE'] = isset($GLOBALS['APICMS_PROFILE']) ? $GLOBALS['APICMS_PROFILE'] : array();
+    function apicms_mark($name){ $GLOBALS['APICMS_PROFILE'][$name] = microtime(true); }
+}
 ////////////////////////////////////////////////////////////////
 // авторизация на сервере базы
 $db = @mysqli_connect(DBHOST, DBUSER, DBPASS);
@@ -36,30 +62,105 @@ echo '<div class=apicms_menu>Действие</div><a class="apicms_comms" href=
 $connect = mysqli_connect(DBHOST, DBUSER, DBPASS) or die('Ошибка подключения, к пользователю Базы данных MySQL, либо не верно введен пароль! Проверьте параметры подключения!');
 mysqli_set_charset($connect, 'utf8');
 mysqli_select_db($connect, DBNAME) or die('Ошибка подключения к Базе данных MySQL! Проверьте параметры подключения!');
-/////////////////////////////////// общий фильтр
-function apicms_filter($check){
-global $connect;
-if (!is_string($check)){
-    if ($check === null) $check = '';
-    else $check = strval($check);
+if (function_exists('apicms_mark')){ apicms_mark('db'); }
+/////////////////////////////////// Классы безопасности и хелперы
+
+function di(): Di {
+    static $di;
+    if (!isset($di)) {
+        $di = Di::getDefault();
+        if (!$di) { $di = new Di(); }
+    }
+    return $di;
 }
-$check = mysqli_real_escape_string($connect, $check);
-$check = htmlspecialchars($check, ENT_QUOTES, 'UTF-8');
-$search = array('|', '\'', '$', '\\', '^', '%', '`', "\0", "\x00", "\x1A", "\x0a", "\x0d", "\x1a");
-$replace = array('&#124;', '&#39;', '&#36;', '&#92;', '&#94;', '&#37;', '&#96;', '', '', '', '', '', '');
-$check = str_replace($search, $replace, $check);
-$check = trim($check);
-return $check;
+
+function di_get(string $name, array $params = []) { return di()->get($name, $params); }
+function di_shared(string $name, array $params = []) { return di()->getShared($name, $params); }
+function di_set(string $name, $definition): void { di()->set($name, $definition); }
+function di_set_shared(string $name, $definition): void { di()->setShared($name, $definition); }
+function di_has(string $name): bool { return di()->has($name); }
+function di_alias(string $alias, string $serviceName): void { di()->setAlias($alias, $serviceName); }
+function db() { return di_shared('db'); }
+
+$di = di();
+$di->setShared('db', $connect);
+$di->setShared('escaper', new Escaper());
+$di->setShared('filter', new Filter());
+$di->setAlias('connect', 'db');
+$di->setAlias('mysqli', 'db');
+
+// Хелперы для Filter класса (очистка входных данных)
+function cms_filter(mixed $value, string|array $filters): mixed {
+    $filter = di_shared('filter');
+    return $filter->sanitize($value, $filters);
+}
+
+function cms_filter_array(array $data, array $map): array {
+    $filter = di_shared('filter');
+    return $filter->sanitizeArray($data, $map);
+}
+
+// Хелперы для Escaper класса (экранирование при выводе)
+function display_html(string $str): string {
+    $escaper = di_shared('escaper');
+    return $escaper->escapeHtml($str);
+}
+
+function display_js(string $str): string {
+    $escaper = di_shared('escaper');
+    return $escaper->escapeJs($str);
+}
+
+function display_url(string $str): string {
+    $escaper = di_shared('escaper');
+    return $escaper->escapeUrl($str);
+}
+
+function display_css(string $str): string {
+    $escaper = di_shared('escaper');
+    return $escaper->escapeCss($str);
+}
+
+// SQL экранирование (отдельно, без HTML экранирования)
+function apicms_sql_escape($value){
+    $connect = db();
+    if ($value === null) return '';
+    if (!is_string($value)) $value = strval($value);
+    return mysqli_real_escape_string($connect, $value);
+}
+
+// Устаревшая функция apicms_filter() - оставлена для обратной совместимости
+// ВАЖНО: Эта функция теперь ТОЛЬКО для очистки входных данных (без HTML экранирования!)
+// Используйте display_html() при выводе данных!
+function apicms_filter($check){
+    global $connect;
+    if (!is_string($check)){
+        if ($check === null) $check = '';
+        else $check = strval($check);
+    }
+    // Только SQL экранирование и очистка, БЕЗ HTML экранирования
+    $check = mysqli_real_escape_string($connect, $check);
+    $search = array('|', '\'', '$', '\\', '^', '%', '`', "\0", "\x00", "\x1A", "\x0a", "\x0d", "\x1a");
+    $replace = array('&#124;', '&#39;', '&#36;', '&#92;', '&#94;', '&#37;', '&#96;', '', '', '', '', '', '');
+    $check = str_replace($search, $replace, $check);
+    $check = trim($check);
+    return $check;
 }
 ////////////////////////////////////////делаем переменную с настройками
-$api_settings = mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `settings`"));
+$api_settings = mysqli_fetch_assoc(apicms_query($connect, "SELECT * FROM `settings`")); if (function_exists('apicms_mark')){ apicms_mark('settings'); }
+di_set_shared('settings', $api_settings);
 ///////////////////////////////////
 // session-first auth, fallback to legacy cookies
 $user = array();
 if (isset($_SESSION['uid'])){
     $uid = intval($_SESSION['uid']);
-    $res = mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = '".$uid."' LIMIT 1");
+    $stmt = mysqli_prepare($connect, "SELECT * FROM `users` WHERE `id` = ? LIMIT 1");
+    mysqli_stmt_bind_param($stmt, 'i', $uid);
+    apicms_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    if (function_exists('apicms_mark')){ apicms_mark('user'); }
     $user = mysqli_fetch_assoc($res);
+    mysqli_stmt_close($stmt);
 }
 if (!$user){
     $userlogin = '';
@@ -68,17 +169,24 @@ if (!$user){
         $userlogin = apicms_filter($_COOKIE['userlogin']);
         $userpass = apicms_filter($_COOKIE['userpass']);
     }
-    $query = mysqli_query($connect, "SELECT * FROM `users` WHERE `login` = '".mysqli_real_escape_string($connect, $userlogin)."' and `pass` = '".mysqli_real_escape_string($connect, $userpass)."' LIMIT 1");
-    $user = mysqli_fetch_assoc($query);
-    if (($userlogin !== '' || $userpass !== '') && !$user){
-        setcookie('userlogin', '', time() - 86400*31, '/', '', false, true);
-        setcookie('userpass', '', time() - 86400*31, '/', '', false, true);
+    if ($userlogin !== '' || $userpass !== '') {
+        $stmt = mysqli_prepare($connect, "SELECT * FROM `users` WHERE `login` = ? AND `pass` = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmt, 'ss', $userlogin, $userpass);
+        apicms_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $user = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+        if (!$user){
+            setcookie('userlogin', '', time() - 86400*31, '/', '', false, true);
+            setcookie('userpass', '', time() - 86400*31, '/', '', false, true);
+        }
     }
 }
 // Ensure $user is always defined (avoid "array offset on null" warnings)
 if (!$user) {
     $user = array();
 }
+di_set_shared('user', $user);
 // Convenience flags to check user state safely across includes
 $is_user = !empty($user) && isset($user['id']);
 $user_level = $is_user && isset($user['level']) ? intval($user['level']) : 0;
@@ -185,8 +293,34 @@ function apicms_bb_code($msg){
   $msg = preg_replace('#\[right\](.*?)\[/right\]#si', '<div style="text-align:right">\1</div>', $msg);
   $msg = preg_replace('#\[justify\](.*?)\[/justify\]#si', '<div style="text-align:justify">\1</div>', $msg);
   $msg = preg_replace('#\[align=(left|right|center|justify)\](.*?)\[/align\]#si', '<div style="text-align:\1">\2</div>', $msg);
-  $msg = preg_replace('#\[quote\](.*?)\[/quote\]#si', '<blockquote>\1</blockquote>', $msg);
-  $msg = preg_replace('#\[quote=("|\'|)(.*?)\1\](.*?)\[/quote\]#si', '<blockquote>\3</blockquote>', $msg);
+  $msg = preg_replace_callback('#\[quote\](.*?)\[/quote\]#si', function($m){
+    $content = $m[1];
+    $content = str_replace(
+      array('&amp;#92;r&amp;#92;n','&#92;r&#92;n','&amp;amp;#92;r&amp;amp;#92;n','&amp;#92;r','&#92;r','&amp;#92;n','&#92;n'),
+      "\n",
+      $content
+    );
+    $content = str_replace(
+      array('&amp;lt;','&amp;gt;','&amp;quot;','&amp;amp;'),
+      array('&lt;','&gt;','&quot;','&amp;'),
+      $content
+    );
+    return '<div class="descr">'.apicms_br($content).'</div>';
+  }, $msg);
+  $msg = preg_replace_callback('#\[quote=("|\'|)(.*?)\1\](.*?)\[/quote\]#si', function($m){
+    $content = $m[3];
+    $content = str_replace(
+      array('&amp;#92;r&amp;#92;n','&#92;r&#92;n','&amp;amp;#92;r&amp;amp;#92;n','&amp;#92;r','&#92;r','&amp;#92;n','&#92;n'),
+      "\n",
+      $content
+    );
+    $content = str_replace(
+      array('&amp;lt;','&amp;gt;','&amp;quot;','&amp;amp;'),
+      array('&lt;','&gt;','&quot;','&amp;'),
+      $content
+    );
+    return '<div class="descr">'.apicms_br($content).'</div>';
+  }, $msg);
   $msg = str_replace('[hr]', '<hr/>', $msg);
   $msg = preg_replace('#\[email\](.*?)\[/email\]#si', '<a href="mailto:\1">\1</a>', $msg);
   $msg = preg_replace('#\[ul\](.*?)\[/ul\]#si', '<ul>\1</ul>', $msg);
@@ -307,8 +441,14 @@ function browser() {
 
 function agent($user){
 global $connect;
-$user_result = mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM `users` WHERE `id` = '".mysqli_real_escape_string($connect, $user)."'"));
-if ($user_result['browser']=='firefox' || $user_result['browser']=='chrome' || $user_result['browser']=='safari' || $user_result['browser']=='opera' || $user_result['browser']=='ie6' || $user_result['browser']=='ie7' || $user_result['browser']=='ie8'){
+$user_id = intval($user);
+$stmt = mysqli_prepare($connect, "SELECT * FROM `users` WHERE `id` = ? LIMIT 1");
+mysqli_stmt_bind_param($stmt, 'i', $user_id);
+apicms_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$user_result = mysqli_fetch_assoc($result);
+mysqli_stmt_close($stmt);
+if ($user_result && isset($user_result['browser']) && ($user_result['browser']=='firefox' || $user_result['browser']=='chrome' || $user_result['browser']=='safari' || $user_result['browser']=='opera' || $user_result['browser']=='ie6' || $user_result['browser']=='ie7' || $user_result['browser']=='ie8')){
 $user = ' <img src="/images/device_pc.png" alt="PC"> ';
 }else{
 $user = ' <img src="/images/device_mobile.png" alt="Моб."> ';
@@ -386,18 +526,24 @@ if ($ava){
     $ts = @filemtime($full);
     return $ts ? ($rel.'?v='.$ts) : $rel;
 }
+return false;
+}
 ///////////////////////////////////
 if (!function_exists('profile_url_by_id')){
 function profile_url_by_id($id_user){
 global $connect;
-$row = mysqli_fetch_assoc(mysqli_query($connect, "SELECT `login` FROM `users` WHERE `id` = '".intval($id_user)."' LIMIT 1"));
+$user_id = intval($id_user);
+$stmt = mysqli_prepare($connect, "SELECT `login` FROM `users` WHERE `id` = ? LIMIT 1");
+mysqli_stmt_bind_param($stmt, 'i', $user_id);
+apicms_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$row = mysqli_fetch_assoc($result);
+mysqli_stmt_close($stmt);
 if ($row && isset($row['login']) && $row['login']!==''){
     return '/'.rawurlencode($row['login']);
 }
-return '/profile.php?id='.intval($id_user);
+return '/profile.php?id='.$user_id;
 }
-}
-return false;
 }
 ///////////////////////////////////
 function apicms_ava64($users) {
@@ -440,10 +586,15 @@ function apicms_error($var){
 
 function status($user){
 global $connect;
-$user_escaped = mysqli_real_escape_string($connect, $user);
-$result = mysqli_query($connect, "SELECT COUNT(*) as cnt FROM `users` WHERE `id` = '$user_escaped' AND `activity` > '".(time()-600)."' LIMIT 1");
+$user_id = intval($user);
+$activity_time = time() - 600;
+$stmt = mysqli_prepare($connect, "SELECT COUNT(*) as cnt FROM `users` WHERE `id` = ? AND `activity` > ? LIMIT 1");
+mysqli_stmt_bind_param($stmt, 'ii', $user_id, $activity_time);
+apicms_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 $row = mysqli_fetch_assoc($result);
-if ($row['cnt']==1){
+mysqli_stmt_close($stmt);
+if ($row && isset($row['cnt']) && $row['cnt']==1){
 $user = ' онлайн ';
 }else{
 $user = ' оффлайн ';
@@ -459,5 +610,3 @@ function csrf_token(){
 function csrf_check(){
     return isset($_POST['csrf_token']) && isset($_SESSION['csrf']) && hash_equals($_SESSION['csrf'], $_POST['csrf_token']);
 }
-
-?>

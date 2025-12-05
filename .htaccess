@@ -52,11 +52,12 @@ Header set Cache-Control "public, max-age=2592000"
 </FilesMatch>
 
 FileETag MTime Size
-ExpiresActive On
-ExpiresByType image/gif "access plus 30 days"
-ExpiresByType image/jpeg "access plus 30 days"
-ExpiresByType image/png "access plus 30 days"
-ExpiresByType image/x-icon "access plus 30 days"
+# Используем только Cache-Control вместо Expires
+# ExpiresActive On
+# ExpiresByType image/gif "access plus 30 days"
+# ExpiresByType image/jpeg "access plus 30 days"
+# ExpiresByType image/png "access plus 30 days"
+# ExpiresByType image/x-icon "access plus 30 days"
 
 
 
@@ -78,8 +79,14 @@ RewriteCond %{REQUEST_URI} !^/(index|auth|login|lost_pass|reg|install|design|mod
 # Only single-segment ASCII nicknames
 RewriteRule ^([A-Za-z0-9._-]+)$ profile.php?username=$1 [L,QSA]
 <IfModule mod_headers.c>
-Header always set X-Frame-Options "DENY"
+# Убираем X-Frame-Options, используем CSP frame-ancestors
+# Header always set X-Frame-Options "DENY"
 Header always set X-Content-Type-Options "nosniff"
 Header always set Referrer-Policy "strict-origin-when-cross-origin"
-Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://ajax.googleapis.com"
+# Убираем 'unsafe-eval' из CSP для безопасности
+Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; media-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://ajax.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://esm.sh; connect-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://esm.sh; frame-src 'self' https://www.youtube.com https://youtube.com; frame-ancestors 'none'"
+# Убираем X-Powered-By если он установлен
+Header unset X-Powered-By
+# Убираем Pragma если он установлен
+Header unset Pragma
 </IfModule>

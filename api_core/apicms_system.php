@@ -1,9 +1,14 @@
 <?php
 
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_samesite', 'Lax');
+if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+ini_set('session.cookie_secure', 1);
+}
 session_start();
 error_reporting(E_ALL ^ E_NOTICE);
-ini_set('display_errors', true);
-ini_set('html_errors', true);
+ini_set('display_errors', false);
+ini_set('html_errors', false);
 ini_set('error_reporting', E_ALL ^ E_NOTICE);
 ////////////////////////////////////////////////////////////////
 include_once 'api_connect.php';
@@ -90,6 +95,13 @@ if (!empty($user) && !empty($user['id'])){
     $api_design = $user['style'];
 }else{
     $api_design = $api_settings['style'];
+}
+if (!is_string($api_design) || !preg_match('/^[a-zA-Z0-9_-]+$/', $api_design)){
+$api_design = 'default';
+}
+$style_head = $_SERVER['DOCUMENT_ROOT'].'/design/styles/'.$api_design.'/head.php';
+if (!file_exists($style_head)){
+$api_design = 'default';
 }
 // дополнительная проверка $_GET
 foreach ($_GET as $check_url) {
